@@ -1,11 +1,14 @@
 # cache-coherence-sim
-A barebones cache simulator that simulates the use of different cache coherence protocols on a given input file for memory access.
+A barebones memory-trace cache simulator that simulates the use of different cache coherence protocols on a given input file for memory access.
 The goal is to measure the number of messages sent, invalidations, and cache misses to evaluate performance of a protocol.
+
+To simulate multi-core cache coherency, memory traces from multiple cores is to be expected.
+This means that each "process / thread" should have its own set of memory-trace along with relative ordering.
 
 This is a work in progress
 
 Simulator.c takes in 3 arguements: 
-- textfile {contents will be rows of "memory access" with "r/w, address, bytes involved"}
+- textfile {contents will be rows of "memory access" with "r/w, address of data, size of data"}
 - number of caches {reflecting the amount of l1 cache modules in the system}
 - cache coherency protocol {planned to have MESI, MOESI, MESIF. More to come if time allows}
 

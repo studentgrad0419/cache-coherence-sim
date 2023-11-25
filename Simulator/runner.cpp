@@ -108,7 +108,7 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
             // Broadcast the message to all controllers except for the sender
             for (auto& cc : cc_list) {
                 //simulate responding to source but tracking using this logic
-                response = cc->processBusMessage(message);//This is a broadcast
+                response = cc->processBusMessage(message); //This response to a broadcast
                 if(response == ResponseMessageType::ACK_CACHE_TO_CACHE){
                     //Data is sent from cache to cache, have the cache respond
                     hasDataSent = response;

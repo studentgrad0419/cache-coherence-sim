@@ -27,12 +27,10 @@ public:
     bool waitingForResponse = false;
     std::queue<CacheRequest> requestQueue;
 
-    CacheController(Cache& cache, Metrics* metrics, int id, Bus& bus): cache(cache), metrics(metrics), controllerId(id), bus(bus){};
+    CacheController(Cache& cache, Metrics* metrics, int id, Bus& bus);
 
     // Function to enqueue a cache request
-    void enqueueRequest(const CacheRequest& request){
-        requestQueue.push(request);
-    };
+    void enqueueRequest(const CacheRequest& request);
 
     // Function to process a cache request
     virtual void processRequest()=0;
@@ -40,13 +38,11 @@ public:
     // Function to process a bus message
     virtual ResponseMessageType processBusMessage(const BusMessage& message)=0;
 
-    // Function to process a response
+    // Function to process a response (for simulation purposes, the original message and response type is used)
     virtual void processBusResponse(const BusMessage& message, const ResponseMessageType& response)=0;
 
     // Function to send a bus message
-    void sendBusMessage(const BusMessage& message){
-        bus.addBusRequest(message);
-    };
+    void sendBusMessage(const BusMessage& message);
 
     // Function to process a cache request (replace with your actual logic)
     virtual void processCacheRequest(const CacheRequest& request)=0;

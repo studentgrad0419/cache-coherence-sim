@@ -30,6 +30,10 @@ enum class ResponseMessageType{
     ACK_NO_DATA,
 };
 
+//helperFunctions for enums
+std::string busMessageTypeToString(BusMessageType messageType);
+std::string responseMessageTypeToString(ResponseMessageType responseType);
+
 // To give information about broadcasted messages
 struct BusMessage {
     int address;

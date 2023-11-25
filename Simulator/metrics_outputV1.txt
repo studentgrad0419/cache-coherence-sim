@@ -1,0 +1,34 @@
+Total Messages: 34
+Total Acknowledgment: 0
+Total Invalidations: 0
+Total Write Backs: 2
+Total Reads from Memory: 16
+
+Cache 1 Metrics:
+  Bytes per Set: 128
+  Bytes per Block: 64
+  Bytes Total: 1024
+  Cache Miss: 4
+  Cache Hit: 0
+
+Cache 2 Metrics:
+  Bytes per Set: 128
+  Bytes per Block: 64
+  Bytes Total: 1024
+  Cache Miss: 6
+  Cache Hit: 0
+
+Cache 3 Metrics:
+  Bytes per Set: 128
+  Bytes per Block: 64
+  Bytes Total: 1024
+  Cache Miss: 1
+  Cache Hit: 1
+
+Cache 4 Metrics:
+  Bytes per Set: 128
+  Bytes per Block: 64
+  Bytes Total: 1024
+  Cache Miss: 5
+  Cache Hit: 0
+

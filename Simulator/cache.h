@@ -11,6 +11,7 @@
 #include <tuple>
 #include <deque>
 #include <unordered_map>
+#include <string>
 
 // Enum for cache block state
 // This is shared in one place for convenience of programming 
@@ -24,6 +25,9 @@ enum CacheBlockState {
     OWNED,
     FORWARD,
 };
+
+//string method for enum
+std::string cacheBlockStateToString(CacheBlockState state);
 
 // Block class representing a cache block
 class Block{

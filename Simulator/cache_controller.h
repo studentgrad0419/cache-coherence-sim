@@ -24,10 +24,12 @@ public:
     Metrics* metrics;
     int controllerId;
     Bus& bus;
+    bool debug = false;
     bool waitingForResponse = false;
+    int lockedAddress = -1;
     std::queue<CacheRequest> requestQueue;
 
-    CacheController(Cache& cache, Metrics* metrics, int id, Bus& bus);
+    CacheController(Cache& cache, Metrics* metrics, int id, Bus& bus, bool debug);
 
     // Function to enqueue a cache request
     void enqueueRequest(const CacheRequest& request);

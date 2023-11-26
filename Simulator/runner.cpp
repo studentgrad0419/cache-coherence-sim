@@ -5,15 +5,18 @@
 #include "Cache.h"
 #include "cache_controller.h"
 #include "MESI_controller.h"
+#include "MOESI_controller.h"
+#include "MESIF_controller.h"
 #include "Bus.h"
 #include "metrics.h"
 #include "runner.h"
 #include <memory>
 #include <vector>
 #include <string>
+#include <cassert>
 void initialize_metrics(Metrics* metric, int associativity, int block_size, int num_cache, int num_blocks);
 
-void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associativity, int block_size, int num_cache, int num_blocks, int mem_delay){
+void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associativity, int block_size, int num_cache, int num_blocks, int mem_delay, bool debug, bool runAtomicTransitions){
     
     //initialize metrics
     initialize_metrics(metric, associativity, block_size, num_cache, num_blocks);
@@ -28,14 +31,21 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
     //initialize bus
     Bus bus;
 
-    //initialize controlers
+    // initialize controlers (1 per thread [no hyper threading])
     // std::vector<CacheController> cc_list;
+    // Note c++ 11 support for unique_ptr enables this ability to store a vector of different coherencies
     std::vector<std::unique_ptr<CacheController>> cc_list;
     for (int i = 0; i < num_cache; ++i) {
         switch (cc_type) {
             case CacheCoherency::MESI:
                 // cc_list.emplace_back(MESIController(caches[i], metric, i, bus));
-                cc_list.push_back(std::unique_ptr<MESIController>(new MESIController(caches[i], metric, i, bus)));
+                cc_list.push_back(std::unique_ptr<MESIController>(new MESIController(caches[i], metric, i, bus, debug)));
+                break;
+            case CacheCoherency::MOESI:
+                cc_list.push_back(std::unique_ptr<MOESIController>(new MOESIController(caches[i], metric, i, bus, debug)));
+                break;
+            case CacheCoherency::MESIF:
+                cc_list.push_back(std::unique_ptr<MESIFController>(new MESIFController(caches[i], metric, i, bus, debug)));
                 break;
             // Add other cache coherency types
             default:
@@ -62,36 +72,67 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
     std::string line;
     std::getline(inputFile, line);
     bool hasLines = true;
-    while(hasLines || !bus.messageQueue.empty() || !delayedResponses.empty()) {
+    bool inQueueInstr = false;
+    while(hasLines || !bus.messageQueue.empty() || !delayedResponses.empty() || inQueueInstr) {
         sscanf(line.c_str(), "%d", &currentLineTime);
-        std::cout << "Time: "<< currentTime << " Line Time: " << currentLineTime << "\n";
+        if(debug) std::cout << "Time: "<< currentTime << " Line Time: " << currentLineTime << "\n";
 
-        // Process lines with the same time
-        while (currentLineTime == currentTime) {
-            // Process the line
-            int time, thread, size;
-            char address[9] = {0};
-            int readWriteBit;
-            sscanf(line.c_str(), "%d:%d:%8[^:]:%d:%d", &time, &thread, address, &readWriteBit, &size);
-            int memoryAddress = std::stoi(address, 0, 16);
-            int startAddress = memoryAddress - (memoryAddress % block_size);
-            int fullSize = size + memoryAddress - startAddress;
+        if(runAtomicTransitions){
+            // Process lines one at a time as they appear in file
+            // Each request is handled as if request is processed instantly with no transient states
+            // Allows easily verifiable simulation, bus still maintains overall order in case of 2 instructions at the "same time"
+            if(bus.messageQueue.empty() && delayedResponses.empty() && !inQueueInstr){
+                // Process the line
+                int time, thread, size;
+                char address[9] = {0};
+                int readWriteBit;
+                sscanf(line.c_str(), "%d:%d:%8[^:]:%d:%d", &time, &thread, address, &readWriteBit, &size);
+                int memoryAddress = std::stoi(address, 0, 16);
+                int startAddress = memoryAddress - (memoryAddress % block_size);
+                int fullSize = size + memoryAddress - startAddress;
 
-            // enqueue relevant cache coherency controller
-            cc_list[thread]->enqueueRequest({time, thread, startAddress, readWriteBit});
-            //Case the bits are on 2 sides of cache boundary
-            if(fullSize > block_size) cc_list[thread]->enqueueRequest({time, thread, startAddress+block_size, readWriteBit});
-            std::cout << line << "\n";
-
-            // Read the next line
-            if (!std::getline(inputFile, line)) {
-                hasLines = false;
-                break;  // End of file
+                // enqueue relevant cache coherency controller
+                cc_list[thread]->enqueueRequest({time, thread, startAddress, readWriteBit});
+                //Case the bits are on 2 sides of cache boundary
+                if(fullSize > block_size) cc_list[thread]->enqueueRequest({time, thread, startAddress+block_size, readWriteBit});
+                // Read the next line
+                if (!std::getline(inputFile, line)) {
+                    hasLines = false;
+                    break;  // End of file
+                }
+                // Extract time from the next line
+                sscanf(line.c_str(), "%d", &currentLineTime);
             }
-
-            // Extract time from the next line
-            sscanf(line.c_str(), "%d", &currentLineTime);
+ 
         }
+        else{
+            // Process lines with the same time (will have transient states)
+            while (currentLineTime == currentTime) {
+                // Process the line
+                int time, thread, size;
+                char address[9] = {0};
+                int readWriteBit;
+                sscanf(line.c_str(), "%d:%d:%8[^:]:%d:%d", &time, &thread, address, &readWriteBit, &size);
+                int memoryAddress = std::stoi(address, 0, 16);
+                int startAddress = memoryAddress - (memoryAddress % block_size);
+                int fullSize = size + memoryAddress - startAddress;
+
+                // enqueue relevant cache coherency controller
+                cc_list[thread]->enqueueRequest({time, thread, startAddress, readWriteBit});
+                //Case the bits are on 2 sides of cache boundary
+                if(fullSize > block_size) cc_list[thread]->enqueueRequest({time, thread, startAddress+block_size, readWriteBit});
+                //std::cout << line << "\n";
+
+                // Read the next line
+                if (!std::getline(inputFile, line)) {
+                    hasLines = false;
+                    break;  // End of file
+                }
+                // Extract time from the next line
+                sscanf(line.c_str(), "%d", &currentLineTime);
+            }
+        }
+        
 
         //Simulate cache controller processing
         for (auto& cc : cc_list) {
@@ -102,6 +143,7 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
         ResponseMessageType hasDataSent = ResponseMessageType::NO_ACK;
         BusMessage message = {-1, -1, BusMessageType::NO_MSG};
         ResponseMessageType response;
+        int responseCounter = 0;
         if(!bus.messageQueue.empty()){
             message = bus.messageQueue.front();
             bus.messageQueue.pop();
@@ -113,6 +155,11 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
                     //Data is sent from cache to cache, have the cache respond
                     hasDataSent = response;
                 }
+                if(response != ResponseMessageType::NO_ACK) ++responseCounter;
+            }
+            //Assert invalidation of caches respected by all
+            if(message.type ==  BusMessageType::GetM){
+                assert(responseCounter == num_cache);
             }
         }
 
@@ -138,6 +185,16 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
             cc_list[oldMessage.originThread]->processBusResponse(oldMessage, std::get<2>(delayedResponses.top()));
             delayedResponses.pop();
         }
+
+        //Check if any instructions still in queue
+        inQueueInstr = false;
+        for (auto& cc : cc_list) {
+            inQueueInstr = (inQueueInstr || !cc->requestQueue.empty());
+        }
+        if(inQueueInstr) {
+            std::cout<< "in queue\n";
+        }
+        std::cout<< " in bus: "<< bus.messageQueue.size() <<'\n';
         // Increment the current time
         ++currentTime;
     }

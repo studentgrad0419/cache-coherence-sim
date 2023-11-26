@@ -7,7 +7,7 @@
 
 class MESIController : public CacheController {
 public:
-    MESIController(Cache& cache, Metrics* metrics, int id, Bus& bus);
+    MESIController(Cache& cache, Metrics* metrics, int id, Bus& bus, bool debug);
 
 public:
     // Override functions to implement MESI protocol

@@ -5,15 +5,16 @@
 
 #include <iostream>
 #include <queue>
+#include <unordered_set>
 
 // Enum representing different bus message types
 // Relevant ones for different coherency usage (depend on controller what is used/ processed)
 // Based on table 6.4, page 102, A Primer on Memory Consistency and Cache Coherence by Vijay Nagarajan, Daniel J. Sorin, Mark D. Hill, and David A. Wood
 enum class BusMessageType {
     NO_MSG,     // Default Value 
-    GetS,       // Requesting a block in S 
-    GetM,       // Requesting a block in M (to be modified)
-    Upg,        // From Share/Owned into M
+    GetS,       // Requesting a block in S //also be referred to as a read probe
+    GetM,       // Requesting a block in M //also referred as a write probe
+    Upg,        // From Share/Owned into M //asks others to invalidate, but getM suffices
     PutS,       // Evict Block in S state
     PutE,       // Evict Block in E state
     PutO,       // Evict Block in O state
@@ -45,10 +46,25 @@ struct BusMessage {
 class Bus {
 public:
     std::queue<BusMessage> messageQueue;
-
+    std::unordered_set<int> activeTransactions;  // Track active transactions per block
+    
     // Function to add a new bus request
     void addBusRequest(const BusMessage& request) {
         messageQueue.push(request);
+        // Add the block to the set of active transactions
+        if(request.address != -1) activeTransactions.insert(request.address);
+    }
+
+    // Function to check if a transaction is valid
+    bool isTransactionValid(const BusMessage& request) {
+        // Check if the block is currently involved in an active transaction
+        return activeTransactions.find(request.address) == activeTransactions.end();
+    }
+
+    // Function to remove a completed transaction
+    void removeCompletedTransaction(int blockAddress) {
+        // Remove the block from the set of active transactions
+        activeTransactions.erase(blockAddress);
     }
 };
 

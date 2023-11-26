@@ -4,6 +4,14 @@ g++ -std=c++11 -Wall -Wextra -static -g -o simulator simulator.cpp cache.cpp mes
 g++ -std=c++11 -Wall -Wextra -static -g -o simulator simulator.cpp cache.h mesi.h metrics.h runner.h bus.h cache_controller.h
 
 g++ -std=c++11 -Wall -Wextra -static -g -o simulator *.cpp -I.
+
 example arg:
-output_trace.txt 4 MESI -assoc 2
+
+output_trace.txt 4 MESI -assoc 2 
+
+output_trace.txt 4 MESI -debug -mem_delay 0
+
+debugTrace.txt 2 MESI -debug -mem_delay 0 -num_blocks 1 -assoc 1 -atomic
+debugTrace.txt 2 MOESI -debug -mem_delay 0 -num_blocks 1 -assoc 1
+
 compMark.txt 4 MESI 

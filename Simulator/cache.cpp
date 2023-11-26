@@ -7,6 +7,31 @@
 #include "metrics.h"
 #include <algorithm>
 
+// Enums to string
+std::string cacheBlockStateToString(CacheBlockState state){
+    switch (state) {
+        case CacheBlockState::INVALID:
+            return "INVALID";
+        case CacheBlockState::VALID:
+            return "GetS";
+        case CacheBlockState::DIRTY:
+            return "DIRTY";
+        case CacheBlockState::SHARED:
+            return "SHARED";
+        case CacheBlockState::EXCLUSIVE:
+            return "EXCLUSIVE";
+        case CacheBlockState::MODIFIED:
+            return "MODIFIED";
+        case CacheBlockState::OWNED:
+            return "OWNED";
+        case CacheBlockState::FORWARD:
+            return "FORWARD";
+        default:
+            return "Unknown";
+    }
+};
+
+
 // CACHE LEVEL
 
 // Constructor (default size is total number of blocks)
@@ -44,7 +69,6 @@ Block* Set::findBlock(int address) {
     return (it != blocks.end()) ? &(*it) : nullptr;
 }
 
-
 // Replace a block in FIFO order within the set
 Block Set::replaceBlock(int address, CacheBlockState state, bool dirtyBit) {
     Block oldBlock;
@@ -70,7 +94,7 @@ Block* Set::findReplacementBlock() {
     return oldBlock;
 }
 
-//DIRECTORY LEVEL (for directory-based alg)
+//DIRECTORY LEVEL (for directory-based alg, unused)
 
 Directory::Directory(int numCaches){
     this->numCaches = numCaches;

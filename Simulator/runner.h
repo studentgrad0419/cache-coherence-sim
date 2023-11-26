@@ -30,6 +30,6 @@ struct DelayedResponseComparator {
     }
 };
 
-void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associativity, int block_size, int num_cache, int num_blocks, int mem_delay);
+void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associativity, int block_size, int num_cache, int num_blocks, int mem_delay, bool debug, bool runAtomicTransitions);
 
 #endif // RUNNER_H

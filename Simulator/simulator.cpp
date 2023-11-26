@@ -10,12 +10,14 @@
 
 int block_size = 64; // bytes
 int num_blocks = 16; // how many blocks in a cache unit
-int assoc = 8;       // how blocks are grouped in cache
+int assoc = 1;       // how blocks are grouped in cache
 char* filename;
 int num_cache;
 char* coherency;
 int isSnoop = 1;
 int mem_delay = 5;
+bool debug = false;
+bool runAtomicTransitions = false;
 
 void positiveOptionsError(const char* str);
 void processArgs(int argc, char** argv);
@@ -37,11 +39,15 @@ int main(int argc, char** argv) {
     Metrics allMetric = Metrics(num_cache);
     // Run the simulation (file input, cache config, metrics)
     if (strcmp(coherency, "MESI") == 0) {
-        // Assuming MESI_SIM is a function or a class representing the MESI simulation
         //MESI_SIM(filename, &allMetric, assoc, block_size, num_cache, num_blocks, isSnoop);
-
-        runSim(CacheCoherency::MESI, filename, &allMetric, assoc, block_size, num_cache, num_blocks, mem_delay);
-    } else {
+        runSim(CacheCoherency::MESI, filename, &allMetric, assoc, block_size, num_cache, num_blocks, mem_delay, debug, runAtomicTransitions);
+    } else if (strcmp(coherency, "MOESI") == 0) {
+        runSim(CacheCoherency::MOESI, filename, &allMetric, assoc, block_size, num_cache, num_blocks, mem_delay, debug, runAtomicTransitions);
+    }
+    else if (strcmp(coherency, "MESIF") == 0) {
+        runSim(CacheCoherency::MESIF, filename, &allMetric, assoc, block_size, num_cache, num_blocks, mem_delay, debug, runAtomicTransitions);
+    }
+    else {
         std::cerr << "Unknown coherency protocol: " << coherency << std::endl;
         return 1; // Exit with an error code
     }
@@ -105,9 +111,30 @@ void processArgs(int argc, char** argv) {
                 positiveOptionsError(argv[i]);
                 std::exit(EXIT_FAILURE);
             }
-        } else if (std::strcmp(argv[i], "-snoop") == 0) {
+        }
+        else if (std::strcmp(argv[i], "-mem_delay") == 0) {
+            if (i + 1 < argc) {
+                mem_delay = std::atoi(argv[i + 1]);
+                if (assoc < 1) {
+                    positiveOptionsError(argv[i]);
+                    std::exit(EXIT_FAILURE);
+                }
+                ++i;
+            } else {
+                positiveOptionsError(argv[i]);
+                std::exit(EXIT_FAILURE);
+            }
+        }
+        else if (std::strcmp(argv[i], "-snoop") == 0) {
             isSnoop = 1;
-        } else {
+        }
+        else if (std::strcmp(argv[i], "-debug") == 0) {
+            debug = 1;
+        }
+        else if (std::strcmp(argv[i], "-atomic") == 0) {
+            runAtomicTransitions = true;
+        } 
+        else {
             std::cerr << "Unknown option: " << argv[i] << '\n';
             std::exit(EXIT_FAILURE);
         }

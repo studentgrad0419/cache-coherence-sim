@@ -1,0 +1,299 @@
+Total Messages: 15746
+Total Acknowledgment: 88590
+Total Acknowledgment With Data: 3008
+Total Acknowledgment from cache-cache 1101
+Total Cache-to-Cache Transfers: 1638
+Total Invalidations: 5515
+Total Write Backs: 2391
+Total Reads from Memory: 4176
+Total Cache Misses: 5277
+Total Cache Hits: 4
+
+Cache 1 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 171
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 2 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 157
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 3 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 181
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 4 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 159
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 5 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 164
+  Cache Hit: 1
+  Cache Miss Rate: 0.993939
+  Cache Hit Rate: 0.00606061
+
+Cache 6 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 168
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 7 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 165
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 8 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 174
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 9 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 164
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 10 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 162
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 11 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 174
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 12 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 171
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 13 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 156
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 14 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 157
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 15 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 165
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 16 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 173
+  Cache Hit: 1
+  Cache Miss Rate: 0.994253
+  Cache Hit Rate: 0.00574713
+
+Cache 17 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 154
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 18 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 165
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 19 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 173
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 20 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 153
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 21 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 169
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 22 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 167
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 23 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 155
+  Cache Hit: 1
+  Cache Miss Rate: 0.99359
+  Cache Hit Rate: 0.00641026
+
+Cache 24 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 169
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 25 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 151
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 26 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 170
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 27 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 161
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 28 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 162
+  Cache Hit: 1
+  Cache Miss Rate: 0.993865
+  Cache Hit Rate: 0.00613497
+
+Cache 29 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 173
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 30 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 160
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 31 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 165
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+
+Cache 32 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 2048
+  Cache Miss: 169
+  Cache Hit: 0
+  Cache Miss Rate: 1
+  Cache Hit Rate: 0
+

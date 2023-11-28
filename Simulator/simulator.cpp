@@ -55,7 +55,8 @@ int main(int argc, char** argv) {
         return 1; // Exit with an error code
     }
     // Write results (metrics to file) to file
-    allMetric.writeToFile("metrics_output.txt");
+    std::string outputFileName = std::to_string(num_cache) + "_" + std::string(coherency) + "_" + std::string(filename);
+    allMetric.writeToFile(outputFileName);
     return 0;
 }
 

@@ -1,5 +1,6 @@
 Total Messages: 32
 Total Acknowledgment: 12
+Total Acknowledgment With Data: 2
 Total Cache-to-Cache Transfers: 11
 Total Invalidations: 6
 Total Write Backs: 2

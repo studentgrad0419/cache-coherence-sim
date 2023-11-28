@@ -172,10 +172,15 @@ ResponseMessageType MESIController::processBusMessage(const BusMessage& message)
                 metrics->total_write_back++;
                 if(debug) std::cout << "  MEMORY WRITTEN  ";
                 metrics->total_msg++;
+                returnVal = ResponseMessageType::ACK_DATA_TO_MEM;
             } 
+            else{
+                returnVal = ResponseMessageType::ACK;
+            }
             searchBlock->state = INVALID;
             metrics->total_inval++;
         }
+        
     }
     else{
         //If Containing a valid block
@@ -197,12 +202,14 @@ ResponseMessageType MESIController::processBusMessage(const BusMessage& message)
                         searchBlock->state == EXCLUSIVE 
                         || searchBlock->state == MODIFIED
                     ){
+                        metrics->total_inval++;
                         searchBlock->state = INVALID;
                         returnVal = ResponseMessageType::ACK_CACHE_TO_CACHE;
                     }
                     else{
                         //All states must invalidate for write-invalidate
                         searchBlock->state = INVALID;
+                        metrics->total_inval++;
                         returnVal = ResponseMessageType::ACK;//send ack direct for invalidating
                     }
                     break;

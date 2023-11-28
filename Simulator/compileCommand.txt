@@ -1,7 +1,4 @@
 compile:
-g++ -std=c++11 -Wall -Wextra -static -g -o simulator simulator.cpp cache.cpp mesi.cpp metrics.h
-
-g++ -std=c++11 -Wall -Wextra -static -g -o simulator simulator.cpp cache.h mesi.h metrics.h runner.h bus.h cache_controller.h
 
 g++ -std=c++11 -Wall -Wextra -static -g -o simulator *.cpp -I.
 

@@ -124,7 +124,6 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
                 cc_list[thread]->enqueueRequest({time, thread, startAddress, readWriteBit});
                 //Case the bits are on 2 sides of cache boundary
                 if(fullSize > block_size) cc_list[thread]->enqueueRequest({time, thread, startAddress+block_size, readWriteBit});
-                //std::cout << line << "\n";
 
                 // Read the next line
                 if (!std::getline(inputFile, line)) {
@@ -154,12 +153,16 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
             for (auto& cc : cc_list) {
                 //simulate responding to source but tracking using this logic
                 response = cc->processBusMessage(message); //This response to a broadcast
+                
+                if(response != ResponseMessageType::NO_ACK) ++responseCounter;
                 if(response == ResponseMessageType::ACK_CACHE_TO_CACHE){
-                    //Data is sent from cache to cache, have the cache respond
-                    metric->total_ack_data += responseCounter;
+                    //Data ack is sent from cache to cache, have the cache respond
+                    metric->total_ack_data_cache++;
                     hasDataSent = response;
                 }
-                if(response != ResponseMessageType::NO_ACK) ++responseCounter;
+                if(response == ResponseMessageType::ACK_CACHE_TO_CACHE || response == ResponseMessageType::ACK_DATA_TO_MEM){
+                    metric->total_ack_data++;
+                }
             }
             metric->total_ack_all += responseCounter;//Responses to bus
             //Assert invalidation of caches respected by all
@@ -211,6 +214,7 @@ void initialize_metrics(Metrics* metric, int associativity, int block_size, int 
     metric->total_msg = 0;
     metric->total_ack_all = 0;
     metric->total_ack_data = 0;
+    metric->total_ack_data_cache = 0;
     metric->total_inval = 0;
     metric->total_write_back = 0;
     metric->total_read_mem = 0;

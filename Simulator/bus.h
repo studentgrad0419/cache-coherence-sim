@@ -47,26 +47,25 @@ class Bus {
 public:
     std::queue<BusMessage> messageQueue;
     //Support for atomic requests -> no state change
+    bool busWait = false;
     std::unordered_set<int> activeTransactions;  // Track active transactions per block
     
     // Function to add a new bus request
-    void addBusRequest(const BusMessage& request) {
-        messageQueue.push(request);
-        // Add the block to the set of active transactions
-        if(request.address != -1 && (request.type == BusMessageType::GetM || request.type == BusMessageType::GetS )) activeTransactions.insert(request.address);
-    }
+    void addBusRequest(const BusMessage& request);
 
     // Function to check if a transaction is valid
-    bool isTransactionValid(const BusMessage& request) {
-        // Check if the block is currently involved in an active transaction
-        return activeTransactions.find(request.address) == activeTransactions.end();
-    }
+    bool isTransactionValid(const BusMessage& request);
 
     // Function to remove a completed transaction
-    void removeCompletedTransaction(int blockAddress) {
-        // Remove the block from the set of active transactions
-        activeTransactions.erase(blockAddress);
-    }
+    void removeCompletedTransaction(int blockAddress);
+
+    // //once own recieved
+    // bool addRequestBlock(const BusMessage& request){
+    //     bool tvalid = isTransactionValid(request);
+    //     if(!tvalid) return false;
+    //     if(request.address != -1 && (request.type == BusMessageType::GetM || request.type == BusMessageType::GetS)) activeTransactions.insert(request.address);
+    //     return true;
+    // }
 };
 
 #endif // BUS_H

@@ -95,7 +95,7 @@ void MESIFController::processCacheRequest(const CacheRequest& request) {
             Block * toBeReplaced = cache.findReplacementBlock(request.requestedAddress);
             //Check if it's a valid block
             if(toBeReplaced->state != INVALID){
-                if(toBeReplaced->state == SHARED || toBeReplaced->state == FORWARD){
+                if(toBeReplaced->state == SHARED || toBeReplaced->state == FORWARD || toBeReplaced->state == EXCLUSIVE){
                     //silent invalidation (okay to invalidate now, FORWARD Property)
                     toBeReplaced->state = INVALID;
                     if(debug) std::cout<<"   Silent Invalid: "<<std::hex << toBeReplaced->address << std::dec << "\n";
@@ -175,6 +175,10 @@ ResponseMessageType MESIFController::processBusMessage(const BusMessage& message
                 metrics->total_write_back++;
                 if(debug) std::cout << "  MEMORY WRITTEN  ";
                 metrics->total_msg++;
+                returnVal = ResponseMessageType::ACK_DATA_TO_MEM;
+            } 
+            else{
+                returnVal = ResponseMessageType::ACK;
             } 
             searchBlock->state = INVALID;
             metrics->total_inval++;
@@ -185,7 +189,7 @@ ResponseMessageType MESIFController::processBusMessage(const BusMessage& message
         if(searchBlock && searchBlock->state != INVALID){
             switch(message.type){
                 case BusMessageType::GetS:
-                    if(searchBlock->state == EXCLUSIVE || searchBlock->state == MODIFIED || searchBlock->state == FORWARD){
+                    if(searchBlock->state == EXCLUSIVE || searchBlock->state == MODIFIED){
                         //send to memory and requestor
                         if(debug) std::cout << "  MEMORY WRITTEN  ";
                         metrics->total_write_back++;
@@ -193,9 +197,12 @@ ResponseMessageType MESIFController::processBusMessage(const BusMessage& message
                         searchBlock->state = SHARED;
                         returnVal = ResponseMessageType::ACK_CACHE_TO_CACHE;
                     }
-                    //Is Shared -> can send data directly
-                    else if(searchBlock->state == SHARED) returnVal = ResponseMessageType::ACK_CACHE_TO_CACHE;
-                    //Note shared does not do anything because it could be another shared requesting
+                    //Is FORWARD -> can send data directly
+                    else if(searchBlock ->state == FORWARD) {
+                        returnVal = ResponseMessageType::ACK_CACHE_TO_CACHE;
+                        searchBlock->state = SHARED;
+                    }
+                    //no shared state passing becuase of forward / m otherwise fetch from mem
                     //a possible optimization is to include information about the requestor's state in the broadcast
                     break;
                 case BusMessageType::GetM:
@@ -206,12 +213,14 @@ ResponseMessageType MESIFController::processBusMessage(const BusMessage& message
                     ){
                         //change state to shared (E/M -> I)
                         searchBlock->state = INVALID;
+                        metrics->total_inval++;
                         //This response is direct?
                         returnVal = ResponseMessageType::ACK_CACHE_TO_CACHE;
                     }
                     else{
                         //All states must invalidate for write-invalidate
                         searchBlock->state = INVALID;
+                        metrics->total_inval++;
                         returnVal = ResponseMessageType::ACK;//send ack direct for invalidating
                     }
                     break;
@@ -226,7 +235,7 @@ ResponseMessageType MESIFController::processBusMessage(const BusMessage& message
             std::cout<< "   After state: " << cacheBlockStateToString(searchBlock->state) << '\n'; 
         }
     }
-    //Signal good for getM
+    //Signal good for getM 
     if(returnVal == ResponseMessageType::NO_ACK && message.type == BusMessageType::GetM) returnVal = ResponseMessageType::ACK;
     //Does not contain block = don't care
     return returnVal;

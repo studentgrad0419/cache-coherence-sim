@@ -180,13 +180,17 @@ ResponseMessageType MOESIController::processBusMessage(const BusMessage& message
         //Check case = PUT_M
         if(message.type == BusMessageType::PutM){
             //The only states that can differ from memory is S*/M/O
-            //S is only different if there exists an O
+            //S is only different if there exists an O S can safely be Invalidated silently
             //Thus we only need to write back O/M when invalid via replacement
             if(searchBlock->state == MODIFIED || searchBlock->state == OWNED){
                 //Send data to memory if modified
                 metrics->total_write_back++;
                 if(debug) std::cout << "  MEMORY WRITTEN  ";
                 metrics->total_msg++;
+                returnVal = ResponseMessageType::ACK_DATA_TO_MEM;
+            } 
+            else{
+                returnVal = ResponseMessageType::ACK;
             }
             // E/M/O -> I
             searchBlock->state = INVALID;
@@ -209,11 +213,11 @@ ResponseMessageType MOESIController::processBusMessage(const BusMessage& message
                         returnVal = ResponseMessageType::ACK_CACHE_TO_CACHE;
                     }
                     //Has a valid copy
-                    else if(searchBlock->state == OWNED || searchBlock->state == SHARED){
+                    else if(searchBlock->state == OWNED){
                         //send only to requestor, no state change
                         //For simplification of simulation, if Owned exist in any of the caches, 
                         // presume OWNED is the data being passed as all caches are expected to snoop
-                        return ResponseMessageType::ACK_CACHE_TO_CACHE;
+                        returnVal = ResponseMessageType::ACK_CACHE_TO_CACHE;
                     }
                     break;
                 case BusMessageType::GetM:
@@ -228,11 +232,13 @@ ResponseMessageType MOESIController::processBusMessage(const BusMessage& message
                     ){
                         //change state to shared (E/M/O -> I)
                         searchBlock->state = INVALID;
+                        metrics->total_inval++;
                         returnVal =  ResponseMessageType::ACK_CACHE_TO_CACHE;
                     }
                     else{
                         //All states must invalidate for write-invalidate
                         searchBlock->state = INVALID;
+                        metrics->total_inval++;
                         returnVal = ResponseMessageType::ACK;//send ack direct for invalidating
                     }
                     break;

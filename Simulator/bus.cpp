@@ -1,6 +1,25 @@
 //Helper method definitions for bus
 #include "bus.h"
 
+//MEthods of bus,h
+void Bus::addBusRequest(const BusMessage& request) {
+    messageQueue.push(request);
+    if (request.address != -1 && (request.type == BusMessageType::GetM || request.type == BusMessageType::GetS))
+        activeTransactions.insert(request.address);
+}
+
+bool Bus::isTransactionValid(const BusMessage& request) {
+    bool notInProgress = (activeTransactions.find(request.address) == activeTransactions.end());
+    if (notInProgress)
+        busWait = true;
+    return notInProgress;
+}
+
+void Bus::removeCompletedTransaction(int blockAddress) {
+    busWait = false;
+    activeTransactions.erase(blockAddress);
+}
+
 //Debug Methods
 std::string busMessageTypeToString(BusMessageType messageType) {
     switch (messageType) {
@@ -43,3 +62,4 @@ std::string responseMessageTypeToString(ResponseMessageType responseType) {
             return "Unknown";
     }
 };
+

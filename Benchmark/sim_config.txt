@@ -1,1 +1,16 @@
-generator.exe 25 2 1 0 0
+generator 5000 2 0 0 0 0 0 0 112823 
+generator 5000 2 1 0 0 0 0 0 112823 
+generator 5000 2 0 1 0 0 0 0 112823 
+generator 5000 2 0 0 1 0 0 20 112823 
+generator 5000 4 0 0 0 0 0 0 112823 
+generator 5000 4 1 0 0 0 0 0 112823 
+generator 5000 4 0 1 0 0 0 0 112823 
+generator 5000 4 0 0 1 0 0 20 112823
+generator 5000 8 0 0 0 0 0 0 112823  
+generator 5000 8 1 0 0 0 0 0 112823 
+generator 5000 8 0 1 0 0 0 0 112823  
+generator 5000 8 0 0 1 0 0 20 112823
+generator 5000 32 0 0 0 0 0 0 112823  
+generator 5000 32 1 0 0 0 0 0 112823 
+generator 5000 32 0 1 0 0 0 0 112823 
+generator 5000 32 0 0 1 0 0 20 112823 

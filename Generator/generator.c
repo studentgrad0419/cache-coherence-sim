@@ -26,6 +26,7 @@ int rangeWeightedRandInt(int range);
 void shuffleThreads(int *thread_list, int size);
 
 int global_time = 0;
+int global_user_def = 0;
 
 //MAIN
 int main(int argc, char **argv) {
@@ -105,6 +106,8 @@ int main(int argc, char **argv) {
         freqRWSections = (freqRWRatio * totalMemAccess) / totalSections;
         migrSections = (migrSRatio * totalMemAccess) / totalSections;
     }
+
+    if(ratio_mr || ratio_rw) global_user_def = 1;
     
     int isAllRandom = (mostlyReadSections < 1 && freqRWSections < 1 && migrSections < 1);
     //If all 3 are 0 or less, it's full random in incrementing time
@@ -125,7 +128,6 @@ int main(int argc, char **argv) {
             int num_sections = rand() % 4 + 1; // Num sections = rand(1:4)
             if(ratio_mr < 1E-8){
                 double fractionWrite = ((double)rand() / RAND_MAX) * 0.1; // Fraction Write <= 0.1
-                int mean_thread_per_section = rand() % numThreads + 1; // Mean threads per section <= numThreads
                 double rand_ratio_mr = (1.0 - fractionWrite) / (fractionWrite * (double)numThreads * ((double)numMemAccess / (double)num_sections));
                 generateMostlyReadSection(numThreads, numMemAccess, filename, rand_ratio_mr, num_sections, threads_order);
             }
@@ -226,15 +228,19 @@ void generateMostlyReadSection(int numThreads, int numMemAccess, const char *fil
     // My implementation (n_mr -> all cores access to access before write, l_mr -> how many references before forced ->I)
     // ratio_mr = P(read) / [ P(write) * num_cores * access_per_section]
     // solve for P(Write) =>  P(read) = P(Write) * ratio_mr * num_cores * access_per_section
-    double pWrite = 1.0 / (ratio_mr * numThreads * access_per_section);
+    double pWrite = 1.0 / (1.0 + ratio_mr * numThreads * access_per_section);
+    if(global_user_def){
+        pWrite *= 1.0 * access_per_section;
+    }
+    
     
     //Generate until number of access is desired and enforce statistics
     int local_time = global_time;
     int totalAccess = 0;
+    int numRead = 0;
     while(totalAccess < numMemAccess){
         //Reset block to simulate system inv instr. (now cores all need a fresh copy)
         int shared_block = rand() % (1 << 30);
-        int numRead = 0;
         int localAccessAmt = 0;
         while(localAccessAmt < access_per_section){
             //figure out how many threads r/w at once
@@ -266,6 +272,7 @@ void generateMostlyReadSection(int numThreads, int numMemAccess, const char *fil
 
 
 //Similar to generate MR
+//Output: trace with property {avg read/write = pWrite, number of reads between a write = num threads, data is moved in *access/section}
 void generateFrequentRWSection(int numThreads, int numMemAccess, const char *filename, double ratio_rw, int num_sections, int *thread_list){
     if(numMemAccess == 0) return;
 
@@ -283,15 +290,18 @@ void generateFrequentRWSection(int numThreads, int numMemAccess, const char *fil
     // My implementation (n_mr -> all cores access to access before write, l_mr -> how many references before forced ->I)
     // ratio_rw = P(read) / [ P(write) * num_cores * access_per_section]
     // solve for P(Write) =>  P(read) = P(Write) * ratio_rw * num_cores * access_per_section
-    double pWrite = 1.0 / (ratio_rw * numThreads * access_per_section);
+    double pWrite = 1.0 / (1.0 + ratio_rw * numThreads * access_per_section);
+    if(global_user_def){
+        pWrite *= 1.0 * access_per_section;
+    }
     
     //Generate until number of access is desired and enforce statistics
     int local_time = global_time;
     int totalAccess = 0;
+    int numRead = 0;
     while(totalAccess < numMemAccess){
         //Reset block to simulate system inv instr. (now cores all need a fresh copy)
         int shared_block = rand() % (1 << 30) ;
-        int numRead = 0;
         int localAccessAmt = 0;
         while(localAccessAmt < access_per_section){
             //figure out how many threads r/w at once

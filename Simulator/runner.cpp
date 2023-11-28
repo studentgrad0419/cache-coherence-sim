@@ -7,6 +7,7 @@
 #include "MESI_controller.h"
 #include "MOESI_controller.h"
 #include "MESIF_controller.h"
+#include "MSI_controller.h"
 #include "Bus.h"
 #include "metrics.h"
 #include "runner.h"
@@ -47,6 +48,9 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
             case CacheCoherency::MESIF:
                 cc_list.push_back(std::unique_ptr<MESIFController>(new MESIFController(caches[i], metric, i, bus, debug)));
                 break;
+            case CacheCoherency::MSI:
+                cc_list.push_back(std::unique_ptr<MSIController>(new MSIController(caches[i], metric, i, bus, debug)));
+                break;
             // Add other cache coherency types
             default:
                 // Handle invalid cache coherency type
@@ -81,7 +85,7 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
             // Process lines one at a time as they appear in file
             // Each request is handled as if request is processed instantly with no transient states
             // Allows easily verifiable simulation, bus still maintains overall order in case of 2 instructions at the "same time"
-            if(bus.messageQueue.empty() && delayedResponses.empty() && !inQueueInstr){
+            if((currentLineTime <= currentTime) && bus.messageQueue.empty() && delayedResponses.empty() && !inQueueInstr){
                 // Process the line
                 int time, thread, size;
                 char address[9] = {0};
@@ -98,10 +102,9 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
                 // Read the next line
                 if (!std::getline(inputFile, line)) {
                     hasLines = false;
-                    break;  // End of file
                 }
                 // Extract time from the next line
-                sscanf(line.c_str(), "%d", &currentLineTime);
+                if(hasLines) sscanf(line.c_str(), "%d", &currentLineTime);
             }
  
         }
@@ -153,10 +156,12 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
                 response = cc->processBusMessage(message); //This response to a broadcast
                 if(response == ResponseMessageType::ACK_CACHE_TO_CACHE){
                     //Data is sent from cache to cache, have the cache respond
+                    metric->total_ack_data += responseCounter;
                     hasDataSent = response;
                 }
                 if(response != ResponseMessageType::NO_ACK) ++responseCounter;
             }
+            metric->total_ack_all += responseCounter;//Responses to bus
             //Assert invalidation of caches respected by all
             if(message.type ==  BusMessageType::GetM){
                 assert(responseCounter == num_cache);
@@ -191,10 +196,10 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
         for (auto& cc : cc_list) {
             inQueueInstr = (inQueueInstr || !cc->requestQueue.empty());
         }
-        if(inQueueInstr) {
-            std::cout<< "in queue\n";
-        }
-        std::cout<< " in bus: "<< bus.messageQueue.size() <<'\n';
+        // if(inQueueInstr) {
+        //     std::cout<< "in queue\n";
+        // }
+        // std::cout<< " in bus: "<< bus.messageQueue.size() <<'\n';
         // Increment the current time
         ++currentTime;
     }
@@ -204,7 +209,8 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
 void initialize_metrics(Metrics* metric, int associativity, int block_size, int num_cache, int num_blocks){
     //Initialize metrics
     metric->total_msg = 0;
-    metric->total_ack = 0;
+    metric->total_ack_all = 0;
+    metric->total_ack_data = 0;
     metric->total_inval = 0;
     metric->total_write_back = 0;
     metric->total_read_mem = 0;

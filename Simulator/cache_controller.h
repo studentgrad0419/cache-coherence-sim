@@ -26,7 +26,8 @@ public:
     Bus& bus;
     bool debug = false;
     bool waitingForResponse = false;
-    int lockedAddress = -1;
+    bool hasMessageHeld = false;
+    std::queue<BusMessage> heldMessages;
     std::queue<CacheRequest> requestQueue;
 
     CacheController(Cache& cache, Metrics* metrics, int id, Bus& bus, bool debug);

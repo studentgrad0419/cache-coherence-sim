@@ -46,13 +46,14 @@ struct BusMessage {
 class Bus {
 public:
     std::queue<BusMessage> messageQueue;
+    //Support for atomic requests -> no state change
     std::unordered_set<int> activeTransactions;  // Track active transactions per block
     
     // Function to add a new bus request
     void addBusRequest(const BusMessage& request) {
         messageQueue.push(request);
         // Add the block to the set of active transactions
-        if(request.address != -1) activeTransactions.insert(request.address);
+        if(request.address != -1 && (request.type == BusMessageType::GetM || request.type == BusMessageType::GetS )) activeTransactions.insert(request.address);
     }
 
     // Function to check if a transaction is valid

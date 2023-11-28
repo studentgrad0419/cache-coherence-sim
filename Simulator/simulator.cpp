@@ -47,6 +47,9 @@ int main(int argc, char** argv) {
     else if (strcmp(coherency, "MESIF") == 0) {
         runSim(CacheCoherency::MESIF, filename, &allMetric, assoc, block_size, num_cache, num_blocks, mem_delay, debug, runAtomicTransitions);
     }
+    else if (strcmp(coherency, "MSI") == 0) {
+        runSim(CacheCoherency::MSI, filename, &allMetric, assoc, block_size, num_cache, num_blocks, mem_delay, debug, runAtomicTransitions);
+    }
     else {
         std::cerr << "Unknown coherency protocol: " << coherency << std::endl;
         return 1; // Exit with an error code

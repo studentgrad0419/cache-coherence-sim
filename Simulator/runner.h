@@ -14,10 +14,11 @@
 
 // Enum representing different Coherency types
 enum class CacheCoherency {
-    MESI,
-    MOESI,
-    MESIF,
-    Dragon,
+    MESI,   //Base MESI does not include share intervention, Referenced in Intel Cpu programming guide
+    MOESI,  //Chosen for being the most popular and current in modern CPU programming guides (AMD)
+    MESIF,  //Chosen for lack of comparisions in comparative studies, though benefits are limited
+    MSI,    //Chosen for simplicity and point of comparison across many existing studies
+    Dragon  //not implemented due to time considerations
 };
 
 // Custom comparator for the priority queue

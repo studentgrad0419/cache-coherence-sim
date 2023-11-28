@@ -102,8 +102,9 @@ void MOESIController::processCacheRequest(const CacheRequest& request) {
             if(toBeReplaced->state != INVALID){
                 if(toBeReplaced->state == SHARED){
                     //silent invalidation (okay to invalidate now)
-                    //notably shared will never transition to exclusive
+                    //noted shared will never transition to exclusive
                     toBeReplaced->state = INVALID;
+                    if(debug) std::cout<<"   Silent Invalid: "<<std::hex << toBeReplaced->address << std::dec << "\n";
                     metrics->total_inval++;
                 }
                 else if(toBeReplaced->state == EXCLUSIVE || toBeReplaced->state == MODIFIED || toBeReplaced->state == OWNED){
@@ -198,9 +199,13 @@ ResponseMessageType MOESIController::processBusMessage(const BusMessage& message
             switch(message.type){
                 case BusMessageType::GetS: 
                     //KEY difference from MESI, Modified does not need to write back to mem
-                    if(searchBlock->state == EXCLUSIVE || searchBlock->state == MODIFIED){
+                    if(searchBlock->state == MODIFIED){
                         //send only to requestor
                         searchBlock->state = OWNED;
+                        returnVal = ResponseMessageType::ACK_CACHE_TO_CACHE;
+                    }
+                    else if(searchBlock->state == EXCLUSIVE){
+                        searchBlock->state = SHARED;
                         returnVal = ResponseMessageType::ACK_CACHE_TO_CACHE;
                     }
                     //Has a valid copy

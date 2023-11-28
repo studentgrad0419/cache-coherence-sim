@@ -15,7 +15,6 @@ void MESIController::processRequest(){
     if (!waitingForResponse && !requestQueue.empty()) {
         // Process the request
         CacheRequest request = requestQueue.front();
-
         //Enforce an atomic transaction, test if address involved include others
         BusMessage test{
             request.requestedAddress,
@@ -43,6 +42,107 @@ void MESIController::processRequest(){
                 }
             }
         }
+    }
+}
+
+//Is called when there is a cache request to be processed
+//Determines if action requires sending information to the bus
+void MESIController::processCacheRequest(const CacheRequest& request) {
+    // You may need to call functions from CacheController or perform additional actions
+    Block * searchBlock = cache.findBlock(request.requestedAddress); //Could return I
+
+    if(debug){
+       std::cout<<" Thread:"<< controllerId <<" Process CPU Req: "<< ((request.readWriteBit == 0) ? " READ " : " WRITE ") << 
+        " For Block: "<< std::hex << request.requestedAddress << std::dec <<"   ";
+        
+        if(searchBlock) std::cout<< "   Initial state: " << cacheBlockStateToString(searchBlock->state); 
+        else std::cout<< "   Block not in L1\n";
+    }
+    //HIT 
+    if(searchBlock && searchBlock->state != INVALID){
+        metrics->cacheMetrics[controllerId].cache_hit++;
+        //If Write, need to check state
+        if(request.readWriteBit){
+            if(searchBlock->state == SHARED){
+                // Create a new bus message for the request
+                BusMessage busRequest{
+                    request.requestedAddress,
+                    controllerId,
+                    BusMessageType::GetM
+                };
+                if(debug) std::cout<<"   Sent GetM\n";
+                bus.addBusRequest(busRequest);
+                metrics->total_msg++;
+                waitingForResponse = true;
+            }
+            else if(searchBlock->state == EXCLUSIVE){
+                //silent transition to E->M
+                searchBlock->state = MODIFIED;
+            }
+        }
+    }
+    //MISS = I state or new block
+    else{
+        metrics->cacheMetrics[controllerId].cache_miss++;
+        //Figure out if replacement action is needed (message sent before allocate)
+        if(!searchBlock){
+            //Get Block to be replaced (any param)
+            Block * toBeReplaced = cache.findReplacementBlock(request.requestedAddress);
+            //Check if it's a valid block
+            if(toBeReplaced->state != INVALID){
+                if(toBeReplaced->state == SHARED){
+                    //silent invalidation (okay to invalidate now)
+                    if(debug) std::cout<<"   Silent Invalid: "<<std::hex << toBeReplaced->address << std::dec << "\n";
+                    toBeReplaced->state = INVALID;
+                    metrics->total_inval++;
+                }
+                else if(toBeReplaced->state == EXCLUSIVE || toBeReplaced->state == MODIFIED){
+                    //need to issue PutM for this address, after self-putm to send/invalidate
+                    BusMessage busRequest{
+                        toBeReplaced->address,
+                        controllerId,
+                        BusMessageType::PutM
+                    };
+                    if(debug) std::cout<<"   Sent PutM\n";
+                    bus.addBusRequest(busRequest);
+                    metrics->total_msg++;
+                }
+            }
+        }
+        //Figure out other request
+        //Case Write
+        if(request.readWriteBit){
+            // Create a new bus message for the request
+            BusMessage busRequest{
+                request.requestedAddress,
+                controllerId,
+                BusMessageType::GetM
+            };
+            if(debug) std::cout<<"   Sent GetM\n";
+            bus.addBusRequest(busRequest);
+            metrics->total_msg++;
+            waitingForResponse = true;
+            
+        }
+        //Case Read
+        else{
+            // Create a new bus message for the request
+            BusMessage busRequest{
+                request.requestedAddress,
+                controllerId,
+                BusMessageType::GetS
+            };
+            if(debug) std::cout<<"   Sent GetS\n";
+            bus.addBusRequest(busRequest);
+            metrics->total_msg++;
+            waitingForResponse = true;
+        }
+    }
+
+    if(debug){
+        if(waitingForResponse) std::cout<< "   Block update awaits response\n";
+        else if(searchBlock) std::cout<< "   After state: " << cacheBlockStateToString(searchBlock->state) << '\n'; 
+        else std::cout<< "   Block not in L1\n";
     }
 }
 
@@ -236,104 +336,4 @@ void MESIController::processBusResponse(const BusMessage& message, const Respons
     bus.removeCompletedTransaction(message.address);
     waitingForResponse = false;
     //May have new request if fail
-}
-
-//Is called when there is a cache request to be processed
-//Determines if action requires sending information to the bus
-void MESIController::processCacheRequest(const CacheRequest& request) {
-    // You may need to call functions from CacheController or perform additional actions
-    Block * searchBlock = cache.findBlock(request.requestedAddress); //Could return I
-
-    if(debug){
-       std::cout<<" Thread:"<< controllerId <<" Process CPU Req: "<< ((request.readWriteBit == 0) ? " READ " : " WRITE ") << 
-        " For Block: "<< std::hex << request.requestedAddress << std::dec <<"   ";
-        
-        if(searchBlock) std::cout<< "   Initial state: " << cacheBlockStateToString(searchBlock->state); 
-        else std::cout<< "   Block not in L1\n";
-    }
-    //HIT 
-    if(searchBlock && searchBlock->state != INVALID){
-        metrics->cacheMetrics[controllerId].cache_hit++;
-        //If Write, need to check state
-        if(request.readWriteBit){
-            if(searchBlock->state == SHARED){
-                // Create a new bus message for the request
-                BusMessage busRequest{
-                    request.requestedAddress,
-                    controllerId,
-                    BusMessageType::GetM
-                };
-                if(debug) std::cout<<"   Sent GetM\n";
-                bus.addBusRequest(busRequest);
-                metrics->total_msg++;
-                waitingForResponse = true;
-            }
-            else if(searchBlock->state == EXCLUSIVE){
-                //silent transition to E->M
-                searchBlock->state = MODIFIED;
-            }
-        }
-    }
-    //MISS = I state or new block
-    else{
-        metrics->cacheMetrics[controllerId].cache_miss++;
-        //Figure out if replacement action is needed (message sent before allocate)
-        if(!searchBlock){
-            //Get Block to be replaced (any param)
-            Block * toBeReplaced = cache.findReplacementBlock(request.requestedAddress);
-            //Check if it's a valid block
-            if(toBeReplaced->state != INVALID){
-                if(toBeReplaced->state == SHARED){
-                    //silent invalidation (okay to invalidate now)
-                    toBeReplaced->state = INVALID;
-                    metrics->total_inval++;
-                }
-                else if(toBeReplaced->state == EXCLUSIVE || toBeReplaced->state == MODIFIED){
-                    //need to issue PutM for this address, after self-putm to send/invalidate
-                    BusMessage busRequest{
-                        toBeReplaced->address,
-                        controllerId,
-                        BusMessageType::PutM
-                    };
-                    if(debug) std::cout<<"   Sent PutM\n";
-                    bus.addBusRequest(busRequest);
-                    metrics->total_msg++;
-                }
-            }
-        }
-        //Figure out other request
-        //Case Write
-        if(request.readWriteBit){
-            // Create a new bus message for the request
-            BusMessage busRequest{
-                request.requestedAddress,
-                controllerId,
-                BusMessageType::GetM
-            };
-            if(debug) std::cout<<"   Sent GetM\n";
-            bus.addBusRequest(busRequest);
-            metrics->total_msg++;
-            waitingForResponse = true;
-            
-        }
-        //Case Read
-        else{
-            // Create a new bus message for the request
-            BusMessage busRequest{
-                request.requestedAddress,
-                controllerId,
-                BusMessageType::GetS
-            };
-            if(debug) std::cout<<"   Sent GetS\n";
-            bus.addBusRequest(busRequest);
-            metrics->total_msg++;
-            waitingForResponse = true;
-        }
-    }
-
-    if(debug){
-        if(waitingForResponse) std::cout<< "   Block update awaits response\n";
-        else if(searchBlock) std::cout<< "   After state: " << cacheBlockStateToString(searchBlock->state) << '\n'; 
-        else std::cout<< "   Block not in L1\n";
-    }
 }

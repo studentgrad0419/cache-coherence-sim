@@ -21,7 +21,8 @@ public:
 class Metrics {
 public:
     long total_msg;
-    long total_ack;
+    long total_ack_all;
+    long total_ack_data;
     long total_cache_to_cache; // when blocks are transferred
     long total_inval;          // total transitions into inval state
     long total_write_back;
@@ -44,7 +45,8 @@ public:
                 total_cache_hit += cacheMetric.cache_hit;
             }
             outFile << "Total Messages: " << total_msg << "\n";
-            outFile << "Total Acknowledgment: " << total_ack << "\n";
+            outFile << "Total Acknowledgment: " << total_ack_all << "\n";
+            outFile << "Total Acknowledgment With Data: " << total_ack_data << "\n";
             outFile << "Total Cache-to-Cache Transfers: " << total_cache_to_cache << "\n";
             outFile << "Total Invalidations: " << total_inval << "\n";
             outFile << "Total Write Backs: " << total_write_back << "\n";

@@ -10,7 +10,7 @@ public:
     MOESIController(Cache& cache, Metrics* metrics, int id, Bus& bus, bool debug);
 
 public:
-    // Override functions to implement MESI protocol
+    // Override functions to implement MOESI protocol
     void processRequest() override;
     ResponseMessageType processBusMessage(const BusMessage& message) override;
     void processBusResponse(const BusMessage& message, const ResponseMessageType& response) override;

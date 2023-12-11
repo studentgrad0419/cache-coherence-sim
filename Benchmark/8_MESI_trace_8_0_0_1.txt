@@ -1,83 +1,83 @@
-Total Messages: 3677
-Total Acknowledgment: 2391
-Total Acknowledgment With Data: 432
-Total Acknowledgment from cache-cache 319
-Total Cache-to-Cache Transfers: 488
-Total Invalidations: 1151
-Total Write Backs: 201
-Total Reads from Memory: 840
-Total Cache Misses: 1159
-Total Cache Hits: 4090
+Total Messages: 21207
+Total Acknowledgment: 5283
+Total Acknowledgment With Data: 1138
+Total Acknowledgment from cache-cache: 804
+Total Cache-to-Cache Transfers: 804
+Total Invalidations: 1739
+Total Write Backs: 609
+Total Reads from Memory: 955
+Total Cache Misses: 1752
+Total Cache Hits: 3487
 
 Cache 1 Metrics:
-  Bytes per Set: 64
+  Bytes per Set: 128
   Bytes per Block: 64
   Bytes Total: 2048
-  Cache Miss: 165
-  Cache Hit: 510
-  Cache Miss Rate: 0.244444
-  Cache Hit Rate: 0.755556
+  Cache Miss: 229
+  Cache Hit: 522
+  Cache Miss Rate: 0.304927
+  Cache Hit Rate: 0.695073
 
 Cache 2 Metrics:
-  Bytes per Set: 64
+  Bytes per Set: 128
   Bytes per Block: 64
   Bytes Total: 2048
-  Cache Miss: 151
-  Cache Hit: 521
-  Cache Miss Rate: 0.224702
-  Cache Hit Rate: 0.775298
+  Cache Miss: 191
+  Cache Hit: 426
+  Cache Miss Rate: 0.309562
+  Cache Hit Rate: 0.690438
 
 Cache 3 Metrics:
-  Bytes per Set: 64
+  Bytes per Set: 128
   Bytes per Block: 64
   Bytes Total: 2048
-  Cache Miss: 202
-  Cache Hit: 729
-  Cache Miss Rate: 0.216971
-  Cache Hit Rate: 0.783029
+  Cache Miss: 201
+  Cache Hit: 382
+  Cache Miss Rate: 0.344768
+  Cache Hit Rate: 0.655232
 
 Cache 4 Metrics:
-  Bytes per Set: 64
+  Bytes per Set: 128
   Bytes per Block: 64
   Bytes Total: 2048
-  Cache Miss: 101
-  Cache Hit: 556
-  Cache Miss Rate: 0.153729
-  Cache Hit Rate: 0.846271
+  Cache Miss: 215
+  Cache Hit: 423
+  Cache Miss Rate: 0.336991
+  Cache Hit Rate: 0.663009
 
 Cache 5 Metrics:
-  Bytes per Set: 64
+  Bytes per Set: 128
   Bytes per Block: 64
   Bytes Total: 2048
-  Cache Miss: 91
-  Cache Hit: 458
-  Cache Miss Rate: 0.165756
-  Cache Hit Rate: 0.834244
+  Cache Miss: 224
+  Cache Hit: 428
+  Cache Miss Rate: 0.343558
+  Cache Hit Rate: 0.656442
 
 Cache 6 Metrics:
-  Bytes per Set: 64
+  Bytes per Set: 128
   Bytes per Block: 64
   Bytes Total: 2048
-  Cache Miss: 151
-  Cache Hit: 341
-  Cache Miss Rate: 0.306911
-  Cache Hit Rate: 0.693089
+  Cache Miss: 204
+  Cache Hit: 395
+  Cache Miss Rate: 0.340568
+  Cache Hit Rate: 0.659432
 
 Cache 7 Metrics:
-  Bytes per Set: 64
+  Bytes per Set: 128
   Bytes per Block: 64
   Bytes Total: 2048
-  Cache Miss: 142
-  Cache Hit: 486
-  Cache Miss Rate: 0.226115
-  Cache Hit Rate: 0.773885
+  Cache Miss: 237
+  Cache Hit: 476
+  Cache Miss Rate: 0.332398
+  Cache Hit Rate: 0.667602
 
 Cache 8 Metrics:
-  Bytes per Set: 64
+  Bytes per Set: 128
   Bytes per Block: 64
   Bytes Total: 2048
-  Cache Miss: 156
-  Cache Hit: 489
-  Cache Miss Rate: 0.24186
-  Cache Hit Rate: 0.75814
+  Cache Miss: 251
+  Cache Hit: 435
+  Cache Miss Rate: 0.365889
+  Cache Hit Rate: 0.634111
 

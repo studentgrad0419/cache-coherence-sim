@@ -1,29 +1,29 @@
-Total Messages: 6823
-Total Acknowledgment: 4236
-Total Acknowledgment With Data: 1733
-Total Acknowledgment from cache-cache 971
-Total Cache-to-Cache Transfers: 1592
-Total Invalidations: 2135
-Total Write Backs: 1376
-Total Reads from Memory: 1647
-Total Cache Misses: 2116
-Total Cache Hits: 3096
+Total Messages: 10649
+Total Acknowledgment: 4615
+Total Acknowledgment With Data: 2005
+Total Acknowledgment from cache-cache: 1303
+Total Cache-to-Cache Transfers: 1303
+Total Invalidations: 2424
+Total Write Backs: 1509
+Total Reads from Memory: 1672
+Total Cache Misses: 2427
+Total Cache Hits: 2831
 
 Cache 1 Metrics:
-  Bytes per Set: 64
+  Bytes per Set: 128
   Bytes per Block: 64
   Bytes Total: 2048
-  Cache Miss: 1086
-  Cache Hit: 1577
-  Cache Miss Rate: 0.407811
-  Cache Hit Rate: 0.592189
+  Cache Miss: 1215
+  Cache Hit: 1407
+  Cache Miss Rate: 0.463387
+  Cache Hit Rate: 0.536613
 
 Cache 2 Metrics:
-  Bytes per Set: 64
+  Bytes per Set: 128
   Bytes per Block: 64
   Bytes Total: 2048
-  Cache Miss: 1030
-  Cache Hit: 1519
-  Cache Miss Rate: 0.40408
-  Cache Hit Rate: 0.59592
+  Cache Miss: 1212
+  Cache Hit: 1424
+  Cache Miss Rate: 0.459788
+  Cache Hit Rate: 0.540212
 

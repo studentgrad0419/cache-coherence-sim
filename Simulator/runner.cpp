@@ -2,13 +2,13 @@
 // Implementation is trace and tick based
 // This type of simulation reflects interleaving of coherency in a multi thread scenario
 
-#include "Cache.h"
+#include "cache.h"
 #include "cache_controller.h"
 #include "MESI_controller.h"
 #include "MOESI_controller.h"
 #include "MESIF_controller.h"
 #include "MSI_controller.h"
-#include "Bus.h"
+#include "bus.h"
 #include "metrics.h"
 #include "runner.h"
 #include <memory>
@@ -154,7 +154,9 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
                 //simulate responding to source but tracking using this logic
                 response = cc->processBusMessage(message); //This response to a broadcast
                 
-                if(response != ResponseMessageType::NO_ACK) ++responseCounter;
+                //Metrics from response
+                metric->total_msg++;
+                if(response != ResponseMessageType::NO_ACK){++responseCounter;} 
                 if(response == ResponseMessageType::ACK_CACHE_TO_CACHE){
                     //Data ack is sent from cache to cache, have the cache respond
                     metric->total_ack_data_cache++;
@@ -163,17 +165,20 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
                 if(response == ResponseMessageType::ACK_CACHE_TO_CACHE || response == ResponseMessageType::ACK_DATA_TO_MEM){
                     metric->total_ack_data++;
                 }
+                if(response == ResponseMessageType::ACK_DATA_TO_MEM){
+                    metric->total_write_back++;
+                }
             }
             metric->total_ack_all += responseCounter;//Responses to bus
             //Assert invalidation of caches respected by all
-            if(message.type ==  BusMessageType::GetM){
-                assert(responseCounter == num_cache);
-            }
+            if(message.type ==  BusMessageType::GetM){assert(responseCounter == num_cache);}
         }
 
         //Process if response uses data from cache or from memory 
         if(hasDataSent == ResponseMessageType::ACK_CACHE_TO_CACHE) {
           response = hasDataSent;
+          metric->total_msg++;
+          metric->total_cache_to_cache++;
           cc_list[message.originThread]->processBusResponse(message, response);
         }
         //Bus forwards to memory if it's get request (adds a delay)
@@ -191,6 +196,8 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
             // Process the delayed response
             BusMessage oldMessage = std::get<1>(delayedResponses.top());
             cc_list[oldMessage.originThread]->processBusResponse(oldMessage, std::get<2>(delayedResponses.top()));
+            metric->total_read_mem++;
+            metric->total_msg++;
             delayedResponses.pop();
         }
 

@@ -72,7 +72,6 @@ void MESIController::processCacheRequest(const CacheRequest& request) {
                 };
                 if(debug) std::cout<<"   Sent GetM\n";
                 bus.addBusRequest(busRequest);
-                metrics->total_msg++;
                 waitingForResponse = true;
             }
             else if(searchBlock->state == EXCLUSIVE){
@@ -105,7 +104,6 @@ void MESIController::processCacheRequest(const CacheRequest& request) {
                     };
                     if(debug) std::cout<<"   Sent PutM\n";
                     bus.addBusRequest(busRequest);
-                    metrics->total_msg++;
                 }
             }
         }
@@ -120,7 +118,6 @@ void MESIController::processCacheRequest(const CacheRequest& request) {
             };
             if(debug) std::cout<<"   Sent GetM\n";
             bus.addBusRequest(busRequest);
-            metrics->total_msg++;
             waitingForResponse = true;
             
         }
@@ -134,7 +131,6 @@ void MESIController::processCacheRequest(const CacheRequest& request) {
             };
             if(debug) std::cout<<"   Sent GetS\n";
             bus.addBusRequest(busRequest);
-            metrics->total_msg++;
             waitingForResponse = true;
         }
     }
@@ -169,9 +165,7 @@ ResponseMessageType MESIController::processBusMessage(const BusMessage& message)
         if(message.type == BusMessageType::PutM){
             if(searchBlock->state == MODIFIED){
                 //Send data to memory if modified
-                metrics->total_write_back++;
                 if(debug) std::cout << "  MEMORY WRITTEN  ";
-                metrics->total_msg++;
                 returnVal = ResponseMessageType::ACK_DATA_TO_MEM;
             } 
             else{
@@ -189,13 +183,13 @@ ResponseMessageType MESIController::processBusMessage(const BusMessage& message)
                 case BusMessageType::GetS:
                     if(searchBlock->state == EXCLUSIVE || searchBlock->state == MODIFIED){
                         //send to memory and requestor
-                        metrics->total_write_back++;
                         if(debug) std::cout << "  MEMORY WRITTEN  ";
                         searchBlock->state = SHARED;
+                        metrics->total_write_back++;//panick removed ealier
                         returnVal = ResponseMessageType::ACK_CACHE_TO_CACHE;
                     }
-                    //Is Shared -> can send data directly
-                    else if(searchBlock->state == SHARED) returnVal = ResponseMessageType::ACK_CACHE_TO_CACHE;
+                    // //Is Shared -> can send data directly
+                    // else if(searchBlock->state == SHARED) returnVal = ResponseMessageType::ACK_CACHE_TO_CACHE;
                     break;
                 case BusMessageType::GetM:
                     if(
@@ -249,22 +243,6 @@ void MESIController::processBusResponse(const BusMessage& message, const Respons
     //All responses is to the original requestor
     assert(message.originThread == controllerId);
 
-    //Classify ACK
-    switch(response){
-        case ResponseMessageType::ACK_CACHE_TO_CACHE:
-            //Data from Cache
-            metrics->total_cache_to_cache++;
-            break;
-        case ResponseMessageType::ACK_DATA_FROM_MEM:
-            //Data from Memory
-            metrics->total_msg++;
-            metrics->total_read_mem++;
-            break;
-        default:
-            assert(0);//Error
-            break;
-    }
-
     //REPLACEMENT HAS OCCURED, ONE BLOCK IS RELEASED ALREADY, CONTINUE WITH REPLACEMENT
     if(!searchBlock){
         //Logic means first replaced
@@ -284,11 +262,9 @@ void MESIController::processBusResponse(const BusMessage& message, const Respons
             switch(response){
                 case ResponseMessageType::ACK_CACHE_TO_CACHE:
                     newState = SHARED;
-                    metrics->total_cache_to_cache++;
                     break;
                 case ResponseMessageType::ACK_DATA_FROM_MEM:
                     newState = EXCLUSIVE;
-                    metrics->total_msg++;
                     break;
                 default:
                     assert(0);//Error
@@ -319,11 +295,9 @@ void MESIController::processBusResponse(const BusMessage& message, const Respons
                 switch(response){
                     case ResponseMessageType::ACK_CACHE_TO_CACHE:
                         newState = SHARED;
-                        metrics->total_cache_to_cache++;
                         break;
                     case ResponseMessageType::ACK_DATA_FROM_MEM:
                         newState = EXCLUSIVE;
-                        metrics->total_msg++;
                         break;
                     default:
                         assert(0);//Error

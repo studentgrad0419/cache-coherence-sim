@@ -3,10 +3,10 @@
 #ifndef RUNNER_H
 #define RUNNER_H
 
-#include "Cache.h"
+#include "cache.h"
 #include "cache_controller.h"
 #include "MESI_controller.h"
-#include "Bus.h"
+#include "bus.h"
 #include "metrics.h"
 #include <vector>
 #include <string>

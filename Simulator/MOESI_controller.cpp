@@ -71,7 +71,8 @@ void MOESIController::processCacheRequest(const CacheRequest& request) {
         metrics->cacheMetrics[controllerId].cache_hit++;
         //If Write, need to "probe write hit"
         if(request.readWriteBit){
-            if(searchBlock->state == SHARED || searchBlock->state == OWNED){
+            // if(searchBlock->state == SHARED || searchBlock->state == OWNED){
+            if(searchBlock->state == SHARED){
                 // Create a new bus message for "probe write hit" 
                 BusMessage busRequest{
                     request.requestedAddress,
@@ -80,11 +81,10 @@ void MOESIController::processCacheRequest(const CacheRequest& request) {
                 };
                 if(debug) std::cout<<"   Sent GetM\n";
                 bus.addBusRequest(busRequest);
-                metrics->total_msg++;
                 waitingForResponse = true; 
                 // For consistency, want to make sure others update before it can move to modified 
             }
-            else if(searchBlock->state == EXCLUSIVE){
+            else if(searchBlock->state == EXCLUSIVE || searchBlock->state == OWNED){
                 //silent transition to E->M because it's the only and most recent copy
                 searchBlock->state = MODIFIED;
             }
@@ -116,7 +116,6 @@ void MOESIController::processCacheRequest(const CacheRequest& request) {
                     };
                     if(debug) std::cout<<"   Sent PutM (WBINV)\n";
                     bus.addBusRequest(busRequest);
-                    metrics->total_msg++;
                 }
             }
         }
@@ -131,7 +130,6 @@ void MOESIController::processCacheRequest(const CacheRequest& request) {
             };
             if(debug) std::cout<<"   Sent GetM (Write Miss)\n";
             bus.addBusRequest(busRequest);
-            metrics->total_msg++;
             waitingForResponse = true;
             
         }
@@ -145,7 +143,6 @@ void MOESIController::processCacheRequest(const CacheRequest& request) {
             };
             if(debug) std::cout<<"   Sent GetS (Read Miss)\n";
             bus.addBusRequest(busRequest);
-            metrics->total_msg++;
             waitingForResponse = true;
         }
     }
@@ -184,15 +181,13 @@ ResponseMessageType MOESIController::processBusMessage(const BusMessage& message
             //Thus we only need to write back O/M when invalid via replacement
             if(searchBlock->state == MODIFIED || searchBlock->state == OWNED){
                 //Send data to memory if modified
-                metrics->total_write_back++;
                 if(debug) std::cout << "  MEMORY WRITTEN  ";
-                metrics->total_msg++;
                 returnVal = ResponseMessageType::ACK_DATA_TO_MEM;
             } 
             else{
                 returnVal = ResponseMessageType::ACK;
             }
-            // E/M/O -> I
+            // E/M/O/S -> I
             searchBlock->state = INVALID;
             metrics->total_inval++;
         }
@@ -277,21 +272,6 @@ void MOESIController::processBusResponse(const BusMessage& message, const Respon
     //All responses is to the original requestor
     assert(message.originThread == controllerId);
     
-    //Classify ACK
-    switch(response){
-        case ResponseMessageType::ACK_CACHE_TO_CACHE:
-            //Data from Cache
-            metrics->total_cache_to_cache++;
-            break;
-        case ResponseMessageType::ACK_DATA_FROM_MEM:
-            //Data from Memory
-            metrics->total_msg++;
-            metrics->total_read_mem++;
-            break;
-        default:
-            assert(0);//Error
-            break;
-    }
     
     //REPLACEMENT HAS OCCURED, ONE BLOCK IS RELEASED ALREADY, CONTINUE WITH REPLACEMENT
     if(!searchBlock){
@@ -312,11 +292,9 @@ void MOESIController::processBusResponse(const BusMessage& message, const Respon
             switch(response){
                 case ResponseMessageType::ACK_CACHE_TO_CACHE://Read Miss Shared
                     newState = SHARED;
-                    metrics->total_cache_to_cache++;
                     break;
                 case ResponseMessageType::ACK_DATA_FROM_MEM://Read-miss exclusive
                     newState = EXCLUSIVE;
-                    metrics->total_msg++;
                     break;
                 default:
                     assert(0);//Error
@@ -329,7 +307,8 @@ void MOESIController::processBusResponse(const BusMessage& message, const Respon
     //UPDATING AN EXISTING ENTRY IN CACHE
     else{
         //NOTE updating with FIFO replacement does not update order, that would be LRU
-        if(searchBlock->state == CacheBlockState::SHARED || searchBlock->state == CacheBlockState::OWNED){
+        // if(searchBlock->state == CacheBlockState::SHARED || searchBlock->state == CacheBlockState::OWNED){
+        if(searchBlock->state == CacheBlockState::SHARED || searchBlock->state == CacheBlockState::OWNED || searchBlock->state == CacheBlockState::EXCLUSIVE){
             //This means that Probe-Write has been respected and all others have invalidated
             assert(message.type == BusMessageType::GetM);
             searchBlock->state = MODIFIED;
@@ -348,11 +327,9 @@ void MOESIController::processBusResponse(const BusMessage& message, const Respon
                 switch(response){
                     case ResponseMessageType::ACK_CACHE_TO_CACHE:
                         newState = SHARED;
-                        metrics->total_cache_to_cache++;
                         break;
                     case ResponseMessageType::ACK_DATA_FROM_MEM:
                         newState = EXCLUSIVE;
-                        metrics->total_msg++;
                         break;
                     default:
                         assert(0);//Error

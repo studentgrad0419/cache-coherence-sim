@@ -9,20 +9,21 @@ This is a work in progress
 
 Instructions to run as per report:
 
-Compile the Simulator from the Simulator folder:  
-  g++ -std=c++11 -Wall -Wextra -static -g -o simulator *.cpp -I.  
-  copy this "simulator" into the benchmark folder  
+Open zip in root directory
+  cd Simulator/
+  g++ -std=c++11 -Wall -Wextra -g -o simulator.exe *.cpp -I.
+  cp simulator.exe ../Benchmark/
+  cd ..
+  cd Generator/
+  g++ -g -o generator.exe generator.c
+  cp generator.exe ../Benchmark/
+  cd ..
+  cd Benchmark/
+  g++ -o run_benchmarks.exe run_benchmarks.c
+  g++ -o run_sim_config.exe run_sim_config.c
 
-Compile the Generator from the Generator folder:  
-  g++ -g -o generator .\generator.c  
-  copy this "generator" into the benchmark folder  
+you can run "run_sim_config.exe" if you want to generate new tracefiles and then "run_benchmarks.exe" to generate the data
 
-Compile the helper functions in Benchmark folder:  
-  g++ -o run_benchmarks .\run_benchmarks.c  
-  g++ -o run_sim_config .\run_sim_config.c  
-
-you can run "run_sim_config" and then "run_benchmarks"  
-
-run_sim_config will generate the tracefiles as specified in the "sim_config.txt"  
+run_sim_config will generate (and overwrite) the tracefiles as specified in the "sim_config.txt"  
 
 run_benchmarks will run the simulation as specified in the "benchmarks.txt"  

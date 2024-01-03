@@ -24,12 +24,11 @@ Description:
 
 COMPILE:
 
-- in directory with generator.c
-- g++ -g -o generator .\generator.c
-on Linux
-- g++ -g -o generator generator.c
+in directory with generator.c
+    g++ -g -o generator.exe generator.c
+
 additionally move to benchmark folder
-- cp generator ../Benchmark/
+    cp generator.exe ../Benchmark/
 
 
 USAGE: (no guarantees if not used properly)

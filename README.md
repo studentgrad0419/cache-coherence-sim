@@ -7,22 +7,22 @@ This means that each "process / thread" should have its own set of memory-trace 
 
 This is a work in progress
 
-Instructions to run as per report:
+Instructions to run as per report:  
 
-Open zip in root directory
-  cd Simulator/
-  g++ -std=c++11 -Wall -Wextra -g -o simulator.exe *.cpp -I.
-  cp simulator.exe ../Benchmark/
-  cd ..
-  cd Generator/
-  g++ -g -o generator.exe generator.c
-  cp generator.exe ../Benchmark/
-  cd ..
-  cd Benchmark/
-  g++ -o run_benchmarks.exe run_benchmarks.c
-  g++ -o run_sim_config.exe run_sim_config.c
-
-you can run "run_sim_config.exe" if you want to generate new tracefiles and then "run_benchmarks.exe" to generate the data
+Open zip in root directory:  
+  cd Simulator/  
+  g++ -std=c++11 -Wall -Wextra -g -o simulator.exe *.cpp -I.  
+  cp simulator.exe ../Benchmark/  
+  cd ..  
+  cd Generator/  
+  g++ -g -o generator.exe generator.c  
+  cp generator.exe ../Benchmark/  
+  cd ..  
+  cd Benchmark/  
+  g++ -o run_benchmarks.exe run_benchmarks.c  
+  g++ -o run_sim_config.exe run_sim_config.c  
+  
+you can run "run_sim_config.exe" if you want to generate new tracefiles and then "run_benchmarks.exe" to generate the data  
 
 run_sim_config will generate (and overwrite) the tracefiles as specified in the "sim_config.txt"  
 

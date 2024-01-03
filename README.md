@@ -7,17 +7,22 @@ This means that each "process / thread" should have its own set of memory-trace 
 
 This is a work in progress
 
-Simulator.c takes in 3 arguements: 
-- textfile {contents will be rows of "memory access" with "r/w, address of data, size of data"}
-- number of caches {reflecting the amount of l1 cache modules in the system}
-- cache coherency protocol {planned to have MESI, MOESI, MESIF. More to come if time allows}
+Instructions to run as per report:
 
-Generator.c takes up to 4 arguements:
-- name of output file {it will write a txt with the given filename}
-- number of accesses
-- minimum access size in bytes
-- maximum access size in bytes
+Compile the Simulator from the Simulator folder:  
+  g++ -std=c++11 -Wall -Wextra -static -g -o simulator *.cpp -I.  
+  copy this "simulator" into the benchmark folder  
 
-Benchmark.c is a precompiled benchmark running against all coherency protocols using the pre-generated txt files with optional args:
-- filename for list of memory access files {if none, will use filenames included in this repo}
-- filename for output of results {if none, prints to console and writes to output.txt}
+Compile the Generator from the Generator folder:  
+  g++ -g -o generator .\generator.c  
+  copy this "generator" into the benchmark folder  
+
+Compile the helper functions in Benchmark folder:  
+  g++ -o run_benchmarks .\run_benchmarks.c  
+  g++ -o run_sim_config .\run_sim_config.c  
+
+you can run "run_sim_config" and then "run_benchmarks"  
+
+run_sim_config will generate the tracefiles as specified in the "sim_config.txt"  
+
+run_benchmarks will run the simulation as specified in the "benchmarks.txt"  

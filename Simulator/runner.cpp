@@ -187,7 +187,7 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
             message.type == BusMessageType::GetM 
         )){
             response = ResponseMessageType::ACK_DATA_FROM_MEM;
-            delayedResponses.push({currentTime + mem_delay, message, response});
+            delayedResponses.push(std::make_tuple(currentTime + mem_delay, message, response));
         }
 
         // Check for delayed responses from memory 

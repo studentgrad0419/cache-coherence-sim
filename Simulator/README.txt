@@ -6,7 +6,9 @@ Description:
 
 Compile:
     In the folder that contains all the .c and .h files run this command
-        g++ -std=c++11 -Wall -Wextra -static -g -o simulator *.cpp -I.
+        g++ -std=c++11 -Wall -Wextra -o simulator.exe *.cpp -I.
+
+        copy to benchmark folder: cp simulator ../Benchmark/
 
 Run:
     Inputs: A memory trace file with lines in this format:

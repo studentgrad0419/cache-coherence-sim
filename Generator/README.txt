@@ -26,6 +26,10 @@ COMPILE:
 
 - in directory with generator.c
 - g++ -g -o generator .\generator.c
+on Linux
+- g++ -g -o generator generator.c
+additionally move to benchmark folder
+- cp generator ../Benchmark/
 
 
 USAGE: (no guarantees if not used properly)

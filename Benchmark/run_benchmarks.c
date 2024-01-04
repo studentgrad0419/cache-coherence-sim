@@ -5,6 +5,12 @@
 #include <stdlib.h>
 #include <cstring>
 
+#ifdef _WIN32
+    #define COMMAND_PREFIX ""
+#else
+    #define COMMAND_PREFIX "./"
+#endif
+
 int main() {
     // Open the file containing commands
     FILE *file = fopen("./benchmarks.txt", "r");
@@ -23,7 +29,12 @@ int main() {
         }
 
         // Use the system function to execute the command
-        int result = system(command);
+        //int result = system(command);
+
+        // Use the system function to execute the command with the appropriate prefix
+        char fullCommand[512];
+        snprintf(fullCommand, sizeof(fullCommand), "%s%s", COMMAND_PREFIX, command);
+        int result = system(fullCommand);
 
         // Check the result of the execution
         if (result == 0) {

@@ -1,64 +1,64 @@
-./simulator.exe trace_2_0_0_0.txt 2 MSI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_2_0_0_0.txt 2 MESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_2_0_0_0.txt 2 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_2_0_0_0.txt 2 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_2_1_0_0.txt 2 MSI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_2_1_0_0.txt 2 MESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_2_1_0_0.txt 2 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_2_1_0_0.txt 2 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_2_0_1_0.txt 2 MSI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_2_0_1_0.txt 2 MESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_2_0_1_0.txt 2 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_2_0_1_0.txt 2 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_2_0_0_1.txt 2 MSI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_2_0_0_1.txt 2 MESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_2_0_0_1.txt 2 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_2_0_0_1.txt 2 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_4_0_0_0.txt 4 MSI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_4_0_0_0.txt 4 MESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_4_0_0_0.txt 4 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_4_0_0_0.txt 4 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_4_1_0_0.txt 4 MSI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_4_1_0_0.txt 4 MESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_4_1_0_0.txt 4 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_4_1_0_0.txt 4 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_4_0_1_0.txt 4 MSI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_4_0_1_0.txt 4 MESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_4_0_1_0.txt 4 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_4_0_1_0.txt 4 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_4_0_0_1.txt 4 MSI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_4_0_0_1.txt 4 MESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_4_0_0_1.txt 4 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_4_0_0_1.txt 4 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_8_0_0_0.txt 8 MSI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_8_0_0_0.txt 8 MESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_8_0_0_0.txt 8 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_8_0_0_0.txt 8 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_8_1_0_0.txt 8 MSI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_8_1_0_0.txt 8 MESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_8_1_0_0.txt 8 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_8_1_0_0.txt 8 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_8_0_1_0.txt 8 MSI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_8_0_1_0.txt 8 MESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_8_0_1_0.txt 8 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_8_0_1_0.txt 8 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_8_0_0_1.txt 8 MSI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_8_0_0_1.txt 8 MESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_8_0_0_1.txt 8 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_8_0_0_1.txt 8 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_32_0_0_0.txt 32 MSI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_32_0_0_0.txt 32 MESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_32_0_0_0.txt 32 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_32_0_0_0.txt 32 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_32_1_0_0.txt 32 MSI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_32_1_0_0.txt 32 MESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_32_1_0_0.txt 32 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_32_1_0_0.txt 32 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_32_0_1_0.txt 32 MSI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_32_0_1_0.txt 32 MESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_32_0_1_0.txt 32 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_32_0_1_0.txt 32 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_32_0_0_1.txt 32 MSI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_32_0_0_1.txt 32 MESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_32_0_0_1.txt 32 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 
-./simulator.exe trace_32_0_0_1.txt 32 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 
+simulator.exe trace_2_0_0_0.txt 2 MSI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_2_0_0_0.txt 2 MESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_2_0_0_0.txt 2 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_2_0_0_0.txt 2 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_2_1_0_0.txt 2 MSI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_2_1_0_0.txt 2 MESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_2_1_0_0.txt 2 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_2_1_0_0.txt 2 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_2_0_1_0.txt 2 MSI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_2_0_1_0.txt 2 MESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_2_0_1_0.txt 2 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_2_0_1_0.txt 2 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_2_0_0_1.txt 2 MSI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_2_0_0_1.txt 2 MESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_2_0_0_1.txt 2 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_2_0_0_1.txt 2 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_4_0_0_0.txt 4 MSI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_4_0_0_0.txt 4 MESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_4_0_0_0.txt 4 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_4_0_0_0.txt 4 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_4_1_0_0.txt 4 MSI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_4_1_0_0.txt 4 MESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_4_1_0_0.txt 4 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_4_1_0_0.txt 4 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_4_0_1_0.txt 4 MSI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_4_0_1_0.txt 4 MESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_4_0_1_0.txt 4 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_4_0_1_0.txt 4 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_4_0_0_1.txt 4 MSI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_4_0_0_1.txt 4 MESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_4_0_0_1.txt 4 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_4_0_0_1.txt 4 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_8_0_0_0.txt 8 MSI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_8_0_0_0.txt 8 MESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_8_0_0_0.txt 8 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_8_0_0_0.txt 8 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_8_1_0_0.txt 8 MSI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_8_1_0_0.txt 8 MESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_8_1_0_0.txt 8 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_8_1_0_0.txt 8 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_8_0_1_0.txt 8 MSI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_8_0_1_0.txt 8 MESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_8_0_1_0.txt 8 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_8_0_1_0.txt 8 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_8_0_0_1.txt 8 MSI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_8_0_0_1.txt 8 MESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_8_0_0_1.txt 8 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_8_0_0_1.txt 8 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_32_0_0_0.txt 32 MSI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_32_0_0_0.txt 32 MESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_32_0_0_0.txt 32 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_32_0_0_0.txt 32 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_32_1_0_0.txt 32 MSI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_32_1_0_0.txt 32 MESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_32_1_0_0.txt 32 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_32_1_0_0.txt 32 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_32_0_1_0.txt 32 MSI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_32_0_1_0.txt 32 MESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_32_0_1_0.txt 32 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_32_0_1_0.txt 32 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_32_0_0_1.txt 32 MSI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_32_0_0_1.txt 32 MESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_32_0_0_1.txt 32 MOESI -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 
+simulator.exe trace_32_0_0_1.txt 32 MESIF -mem_delay 0 -num_blocks 32 -assoc 2 -atomic 

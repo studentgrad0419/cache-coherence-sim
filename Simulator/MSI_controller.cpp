@@ -69,11 +69,12 @@ void MSIController::processCacheRequest(const CacheRequest& request) {
                 BusMessage busRequest{
                     request.requestedAddress,
                     controllerId,
-                    BusMessageType::GetM
+                    BusMessageType::Upg
                 };
-                if(debug) std::cout<<"   Sent GetM\n";
+                if(debug) std::cout<<"   Sent Upg\n";
                 bus.addBusRequest(busRequest);
-                waitingForResponse = true;
+                //waitingForResponse = true;
+                searchBlock->state = MODIFIED;
             }
             else{
                 //Only defined for Modified -> Modified
@@ -198,8 +199,14 @@ ResponseMessageType MSIController::processBusMessage(const BusMessage& message) 
                         //All states must invalidate for write-invalidate
                         searchBlock->state = INVALID;
                         metrics->total_inval++;
-                        returnVal = ResponseMessageType::ACK;//send ack direct for invalidating
+                        //returnVal = ResponseMessageType::ACK;//send ack direct for invalidating
                     }
+                    break;
+                case BusMessageType::Upg:
+                    //Part of Write-Invalidate
+                    searchBlock->state = INVALID;
+                    metrics->total_inval++;
+                    //returnVal = ResponseMessageType::NO_ACK;//ACK is not needed
                     break;
                 default:
                     break;
@@ -212,7 +219,7 @@ ResponseMessageType MSIController::processBusMessage(const BusMessage& message) 
         }
     }
     //Signal good for getM
-    if(returnVal == ResponseMessageType::NO_ACK && message.type == BusMessageType::GetM) returnVal = ResponseMessageType::ACK;
+    //if(returnVal == ResponseMessageType::NO_ACK && message.type == BusMessageType::GetM) returnVal = ResponseMessageType::ACK;
     //Does not contain block = don't care
     return returnVal;
 }

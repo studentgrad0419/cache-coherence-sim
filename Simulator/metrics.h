@@ -20,14 +20,14 @@ public:
 
 class Metrics {
 public:
-    long total_msg;
-    long total_ack_all;
-    long total_ack_data;
+    long total_msg;            // Sum of all messages sent across the bus
+    long total_ack_all;        // Sum of all acknoledgements sent to the bus
+    long total_ack_data;       // Sum of all acknoledgements that includes data sent to the bus
     long total_ack_data_cache; // Number ack to send data to cache
     long total_cache_to_cache; // when blocks are transferred
     long total_inval;          // total transitions into inval state
-    long total_write_back;
-    long total_read_mem;
+    long total_write_back;     // Total number of higher level memory writes
+    long total_read_mem;       // Total number of higher level memory reads
 
 
     std::vector<CacheMetrics> cacheMetrics;

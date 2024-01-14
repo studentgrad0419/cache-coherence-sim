@@ -149,37 +149,36 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
         if(!bus.messageQueue.empty()){
             message = bus.messageQueue.front();
             bus.messageQueue.pop();
-            // Broadcast the message to all controllers except for the sender
+            // Broadcast the message (1x) to all controllers
+            metric->total_msg++;
             for (auto& cc : cc_list) {
-                //simulate responding to source but tracking using this logic
-                response = cc->processBusMessage(message); //This response to a broadcast
-                
-                //Metrics from response
-                metric->total_msg++;
-                if(response != ResponseMessageType::NO_ACK){++responseCounter;} 
+                // Simulate responding to source but tracking using this logic
+                response = cc->processBusMessage(message);                          // This response to a broadcast
+                if(response != ResponseMessageType::NO_ACK){++responseCounter;}     // Count number of responses
                 if(response == ResponseMessageType::ACK_CACHE_TO_CACHE){
-                    //Data ack is sent from cache to cache, have the cache respond
-                    metric->total_ack_data_cache++;
-                    hasDataSent = response;
+                    metric->total_ack_data_cache++;                                 // Data ack is sent from cache to cache, have the cache respond
+                    hasDataSent = response;                                         // Sending of data is recorded
                 }
                 if(response == ResponseMessageType::ACK_CACHE_TO_CACHE || response == ResponseMessageType::ACK_DATA_TO_MEM){
-                    metric->total_ack_data++;
+                    metric->total_ack_data++;                                       // Falls under acks with data
                 }
                 if(response == ResponseMessageType::ACK_DATA_TO_MEM){
-                    metric->total_write_back++;
+                    metric->total_write_back++;                                     // Falls under data written to memory (assuming diff handling for memory reqs)
                 }
             }
-            metric->total_ack_all += responseCounter;//Responses to bus
-            //Assert invalidation of caches respected by all
-            if(message.type ==  BusMessageType::GetM){assert(responseCounter == num_cache);}
+            metric->total_ack_all += responseCounter; //Responses to bus
+            metric->total_msg += responseCounter; //These messages count towards overall bandwidth
         }
 
-        //Process if response uses data from cache or from memory 
-        if(hasDataSent == ResponseMessageType::ACK_CACHE_TO_CACHE) {
-          response = hasDataSent;
-          metric->total_msg++;
-          metric->total_cache_to_cache++;
-          cc_list[message.originThread]->processBusResponse(message, response);
+        //Process if response uses data from cache or from memory
+        if(message.type ==  BusMessageType::Upg){ //No fetching / extra needed
+            //response = ResponseMessageType::ACK;
+        } 
+        else if(hasDataSent == ResponseMessageType::ACK_CACHE_TO_CACHE) {
+            response = hasDataSent;
+            //metric->total_msg++; //already counted in response counter
+            metric->total_cache_to_cache++; //Only count 1x the transfer of cache to cache even if multiple may have/responded
+            cc_list[message.originThread]->processBusResponse(message, response);
         }
         //Bus forwards to memory if it's get request (adds a delay)
         else if(message.address != -1 && (
@@ -197,7 +196,7 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
             BusMessage oldMessage = std::get<1>(delayedResponses.top());
             cc_list[oldMessage.originThread]->processBusResponse(oldMessage, std::get<2>(delayedResponses.top()));
             metric->total_read_mem++;
-            metric->total_msg++;
+            metric->total_msg++;        //Only count response back to cache, not the memory to bus part from diff channel assumption
             delayedResponses.pop();
         }
 
@@ -206,11 +205,6 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
         for (auto& cc : cc_list) {
             inQueueInstr = (inQueueInstr || !cc->requestQueue.empty());
         }
-        // if(inQueueInstr) {
-        //     std::cout<< "in queue\n";
-        // }
-        // std::cout<< " in bus: "<< bus.messageQueue.size() <<'\n';
-        // Increment the current time
         ++currentTime;
     }
 

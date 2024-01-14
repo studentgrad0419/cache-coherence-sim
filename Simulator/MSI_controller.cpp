@@ -73,8 +73,8 @@ void MSIController::processCacheRequest(const CacheRequest& request) {
                 };
                 if(debug) std::cout<<"   Sent Upg\n";
                 bus.addBusRequest(busRequest);
-                //waitingForResponse = true;
-                searchBlock->state = MODIFIED;
+                waitingForResponse = true;
+                //searchBlock->state = MODIFIED;
             }
             else{
                 //Only defined for Modified -> Modified
@@ -244,8 +244,12 @@ void MSIController::processBusResponse(const BusMessage& message, const Response
     //All responses is to the original requestor
     assert(message.originThread == controllerId);
 
+    if(message.type == BusMessageType::Upg){
+        assert(searchBlock);
+        searchBlock->state = MODIFIED;
+    }
     //REPLACEMENT HAS OCCURED, ONE BLOCK IS RELEASED ALREADY, CONTINUE WITH REPLACEMENT
-    if(!searchBlock){
+    else if(!searchBlock){
         //Logic means first replaced (also called victim block)
         Block * toBeReplaced = cache.findReplacementBlock(message.address);
         bus.removeCompletedTransaction(toBeReplaced->address);

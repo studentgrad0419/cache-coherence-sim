@@ -68,18 +68,19 @@ void MESIFController::processCacheRequest(const CacheRequest& request) {
         metrics->cacheMetrics[controllerId].cache_hit++;
         //If Write, need to check state
         if(request.readWriteBit){
-            if(searchBlock->state == SHARED){
+            if(searchBlock->state == SHARED || searchBlock->state == FORWARD){
                 // Create a new bus message for the request
                 BusMessage busRequest{
                     request.requestedAddress,
                     controllerId,
-                    BusMessageType::GetM
+                    BusMessageType::Upg
                 };
-                if(debug) std::cout<<"   Sent GetM\n";
+                if(debug) std::cout<<"   Sent Upg\n";
                 bus.addBusRequest(busRequest);
                 waitingForResponse = true;
+                //searchBlock->state = MODIFIED;
             }
-            else if(searchBlock->state == EXCLUSIVE || searchBlock->state == FORWARD){
+            else if(searchBlock->state == EXCLUSIVE){
                 //silent transition to E->M
                 searchBlock->state = MODIFIED;
             }
@@ -198,6 +199,9 @@ ResponseMessageType MESIFController::processBusMessage(const BusMessage& message
                     }
                     //no shared state passing becuase of forward / m otherwise fetch from mem
                     //a possible optimization is to include information about the requestor's state in the broadcast
+
+                    //Not part of spec, for purpose of tracking shared for exclusive state
+                    else if(searchBlock->state == SHARED) returnVal = ResponseMessageType::ACK_DATA_FROM_MEM_SHRD;
                     break;
                 case BusMessageType::GetM:
                     if(
@@ -215,8 +219,14 @@ ResponseMessageType MESIFController::processBusMessage(const BusMessage& message
                         //All states must invalidate for write-invalidate
                         searchBlock->state = INVALID;
                         metrics->total_inval++;
-                        returnVal = ResponseMessageType::ACK;//send ack direct for invalidating
+                        //returnVal = ResponseMessageType::ACK;//send ack direct for invalidating
                     }
+                    break;
+                case BusMessageType::Upg:
+                    //Part of Write-Invalidate
+                    searchBlock->state = INVALID;
+                    metrics->total_inval++;
+                    //returnVal = ResponseMessageType::NO_ACK;//ACK is not needed
                     break;
                 default:
                     break;
@@ -230,7 +240,7 @@ ResponseMessageType MESIFController::processBusMessage(const BusMessage& message
         }
     }
     //Signal good for getM 
-    if(returnVal == ResponseMessageType::NO_ACK && message.type == BusMessageType::GetM) returnVal = ResponseMessageType::ACK;
+    //if(returnVal == ResponseMessageType::NO_ACK && message.type == BusMessageType::GetM) returnVal = ResponseMessageType::ACK;
     //Does not contain block = don't care
     return returnVal;
 }
@@ -250,9 +260,15 @@ void MESIFController::processBusResponse(const BusMessage& message, const Respon
         else std::cout<< "   Block not in L1";
         
     }
-    
+    //All responses is to the original requestor
+    assert(message.originThread == controllerId);
+
+    if(message.type == BusMessageType::Upg){
+        assert(searchBlock);
+        searchBlock->state = MODIFIED;
+    }
     //REPLACEMENT HAS OCCURED, ONE BLOCK IS RELEASED ALREADY, CONTINUE WITH REPLACEMENT
-    if(!searchBlock){
+    else if(!searchBlock){
         //Logic means first replaced
         Block * toBeReplaced = cache.findReplacementBlock(message.address);
         bus.removeCompletedTransaction(toBeReplaced->address);
@@ -274,6 +290,9 @@ void MESIFController::processBusResponse(const BusMessage& message, const Respon
                     break;
                 case ResponseMessageType::ACK_DATA_FROM_MEM:
                     newState = EXCLUSIVE;
+                    break;
+                case ResponseMessageType::ACK_DATA_FROM_MEM_SHRD:
+                    newState = SHARED;
                     break;
                 default:
                     assert(0);//Error
@@ -309,6 +328,9 @@ void MESIFController::processBusResponse(const BusMessage& message, const Respon
                         break;
                     case ResponseMessageType::ACK_DATA_FROM_MEM:
                         newState = EXCLUSIVE;
+                        break;
+                    case ResponseMessageType::ACK_DATA_FROM_MEM_SHRD:
+                        newState = SHARED;
                         break;
                     default:
                         assert(0);//Error

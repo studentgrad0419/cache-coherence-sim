@@ -1,0 +1,29 @@
+Total Messages: 30
+Total Acknowledgment: 8
+Total Acknowledgment With Data: 7
+Total Acknowledgment from cache-cache: 6
+Total Cache-to-Cache Transfers: 6
+Total Invalidations: 10
+Total Write Backs: 5
+Total Reads from Memory: 6
+Total Cache Misses: 12
+Total Cache Hits: 7
+
+Cache 1 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 64
+  Cache Miss: 5
+  Cache Hit: 5
+  Cache Miss Rate: 0.5
+  Cache Hit Rate: 0.5
+
+Cache 2 Metrics:
+  Bytes per Set: 64
+  Bytes per Block: 64
+  Bytes Total: 64
+  Cache Miss: 7
+  Cache Hit: 2
+  Cache Miss Rate: 0.777778
+  Cache Hit Rate: 0.222222
+

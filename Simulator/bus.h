@@ -28,6 +28,7 @@ enum class ResponseMessageType{
     ACK_CACHE_TO_CACHE,
     ACK_DATA_TO_MEM,
     ACK_DATA_FROM_MEM,
+    ACK_DATA_FROM_MEM_SHRD,
     ACK_NO_DATA,
 };
 

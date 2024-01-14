@@ -145,7 +145,7 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
         ResponseMessageType hasDataSent = ResponseMessageType::NO_ACK;
         BusMessage message = {-1, -1, BusMessageType::NO_MSG};
         ResponseMessageType response;
-        int responseCounter = 0;
+        int responseCounter = 0, isSharedFlag = 0;
         if(!bus.messageQueue.empty()){
             message = bus.messageQueue.front();
             bus.messageQueue.pop();
@@ -154,17 +154,20 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
             for (auto& cc : cc_list) {
                 // Simulate responding to source but tracking using this logic
                 response = cc->processBusMessage(message);                          // This response to a broadcast
-                if(response != ResponseMessageType::NO_ACK){++responseCounter;}     // Count number of responses
-                if(response == ResponseMessageType::ACK_CACHE_TO_CACHE){
-                    metric->total_ack_data_cache++;                                 // Data ack is sent from cache to cache, have the cache respond
-                    hasDataSent = response;                                         // Sending of data is recorded
-                }
+                if(response != ResponseMessageType::NO_ACK 
+                    && response != ResponseMessageType::ACK_DATA_FROM_MEM_SHRD){++responseCounter;}     // Count number of responses
+                if(response == ResponseMessageType::ACK_DATA_FROM_MEM_SHRD) isSharedFlag++;
                 if(response == ResponseMessageType::ACK_CACHE_TO_CACHE || response == ResponseMessageType::ACK_DATA_TO_MEM){
-                    metric->total_ack_data++;                                       // Falls under acks with data
+                    metric->total_ack_data++; // Falls under acks with data
+                    if(response == ResponseMessageType::ACK_DATA_TO_MEM){
+                        metric->total_write_back++;                                     // Falls under data written to memory (assuming diff handling for memory reqs)
+                    }
+                    else if(response == ResponseMessageType::ACK_CACHE_TO_CACHE){
+                        metric->total_ack_data_cache++;                                 // Data ack is sent from cache to cache, have the cache respond
+                        hasDataSent = response;                                         // Sending of data is recorded
+                    }                                       
                 }
-                if(response == ResponseMessageType::ACK_DATA_TO_MEM){
-                    metric->total_write_back++;                                     // Falls under data written to memory (assuming diff handling for memory reqs)
-                }
+                
             }
             metric->total_ack_all += responseCounter; //Responses to bus
             metric->total_msg += responseCounter; //These messages count towards overall bandwidth
@@ -172,7 +175,8 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
 
         //Process if response uses data from cache or from memory
         if(message.type ==  BusMessageType::Upg){ //No fetching / extra needed
-            //response = ResponseMessageType::ACK;
+            response = ResponseMessageType::ACK;
+            cc_list[message.originThread]->processBusResponse(message, response);
         } 
         else if(hasDataSent == ResponseMessageType::ACK_CACHE_TO_CACHE) {
             response = hasDataSent;
@@ -185,7 +189,8 @@ void runSim(CacheCoherency cc_type, char* filename, Metrics* metric, int associa
             message.type == BusMessageType::GetS || 
             message.type == BusMessageType::GetM 
         )){
-            response = ResponseMessageType::ACK_DATA_FROM_MEM;
+            if(isSharedFlag == 0) response = ResponseMessageType::ACK_DATA_FROM_MEM;
+            else response = ResponseMessageType::ACK_DATA_FROM_MEM_SHRD;
             delayedResponses.push(std::make_tuple(currentTime + mem_delay, message, response));
         }
 

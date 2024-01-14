@@ -72,19 +72,20 @@ void MOESIController::processCacheRequest(const CacheRequest& request) {
         //If Write, need to "probe write hit"
         if(request.readWriteBit){
             // if(searchBlock->state == SHARED || searchBlock->state == OWNED){
-            if(searchBlock->state == SHARED){
+            if(searchBlock->state == SHARED || searchBlock->state == OWNED){
                 // Create a new bus message for "probe write hit" 
                 BusMessage busRequest{
                     request.requestedAddress,
                     controllerId,
-                    BusMessageType::GetM
+                    BusMessageType::Upg
                 };
-                if(debug) std::cout<<"   Sent GetM\n";
+                if(debug) std::cout<<"   Sent Upg\n";
                 bus.addBusRequest(busRequest);
                 waitingForResponse = true; 
                 // For consistency, want to make sure others update before it can move to modified 
+                //searchBlock->state = MODIFIED;
             }
-            else if(searchBlock->state == EXCLUSIVE || searchBlock->state == OWNED){
+            else if(searchBlock->state == EXCLUSIVE){
                 //silent transition to E->M because it's the only and most recent copy
                 searchBlock->state = MODIFIED;
             }
@@ -170,7 +171,7 @@ ResponseMessageType MOESIController::processBusMessage(const BusMessage& message
         else std::cout<< "   Block not in L1\n";
         
     }
-
+    
     //Check if from self (for replacement to be okay/communicated)
     if(message.originThread == controllerId){
         //if(!searchBlock) throw std::runtime_error("Error: No block found for a self-originated message.");
@@ -214,6 +215,8 @@ ResponseMessageType MOESIController::processBusMessage(const BusMessage& message
                         // presume OWNED is the data being passed as all caches are expected to snoop
                         returnVal = ResponseMessageType::ACK_CACHE_TO_CACHE;
                     }
+                    //Not part of spec, for purpose of tracking shared
+                    else if(searchBlock->state == SHARED) returnVal = ResponseMessageType::ACK_DATA_FROM_MEM_SHRD;
                     break;
                 case BusMessageType::GetM:
                     //Another point here
@@ -234,8 +237,14 @@ ResponseMessageType MOESIController::processBusMessage(const BusMessage& message
                         //All states must invalidate for write-invalidate
                         searchBlock->state = INVALID;
                         metrics->total_inval++;
-                        returnVal = ResponseMessageType::ACK;//send ack direct for invalidating
+                        //returnVal = ResponseMessageType::ACK;//send ack direct for invalidating
                     }
+                    break;
+                case BusMessageType::Upg:
+                    //Part of Write-Invalidate
+                    searchBlock->state = INVALID;
+                    metrics->total_inval++;
+                    //returnVal = ResponseMessageType::NO_ACK;//ACK is not needed
                     break;
                 default:
                     break;
@@ -248,7 +257,7 @@ ResponseMessageType MOESIController::processBusMessage(const BusMessage& message
         }
     }
     //Signal good for getM
-    if(returnVal == ResponseMessageType::NO_ACK && message.type == BusMessageType::GetM) returnVal = ResponseMessageType::ACK;
+    //if(returnVal == ResponseMessageType::NO_ACK && message.type == BusMessageType::GetM) returnVal = ResponseMessageType::ACK;
     //Does not contain block = don't care
     return returnVal;
 }
@@ -272,9 +281,12 @@ void MOESIController::processBusResponse(const BusMessage& message, const Respon
     //All responses is to the original requestor
     assert(message.originThread == controllerId);
     
-    
+    if(message.type == BusMessageType::Upg){
+        assert(searchBlock);
+        searchBlock->state = MODIFIED;
+    }
     //REPLACEMENT HAS OCCURED, ONE BLOCK IS RELEASED ALREADY, CONTINUE WITH REPLACEMENT
-    if(!searchBlock){
+    else if(!searchBlock){
         //Logic means first replaced
         Block * toBeReplaced = cache.findReplacementBlock(message.address);
         bus.removeCompletedTransaction(toBeReplaced->address);
@@ -295,6 +307,9 @@ void MOESIController::processBusResponse(const BusMessage& message, const Respon
                     break;
                 case ResponseMessageType::ACK_DATA_FROM_MEM://Read-miss exclusive
                     newState = EXCLUSIVE;
+                    break;
+                case ResponseMessageType::ACK_DATA_FROM_MEM_SHRD:
+                    newState = SHARED;
                     break;
                 default:
                     assert(0);//Error
@@ -330,6 +345,9 @@ void MOESIController::processBusResponse(const BusMessage& message, const Respon
                         break;
                     case ResponseMessageType::ACK_DATA_FROM_MEM:
                         newState = EXCLUSIVE;
+                        break;
+                    case ResponseMessageType::ACK_DATA_FROM_MEM_SHRD:
+                        newState = SHARED;
                         break;
                     default:
                         assert(0);//Error

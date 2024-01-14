@@ -4,7 +4,7 @@
 //MEthods of bus,h
 void Bus::addBusRequest(const BusMessage& request) {
     messageQueue.push(request);
-    if (request.address != -1 && (request.type == BusMessageType::GetM || request.type == BusMessageType::GetS))
+    if (request.address != -1 && (request.type == BusMessageType::GetM || request.type == BusMessageType::GetS || request.type == BusMessageType::Upg))
         activeTransactions.insert(request.address);
 }
 
@@ -56,6 +56,8 @@ std::string responseMessageTypeToString(ResponseMessageType responseType) {
             return "ACK_DATA_TO_MEM";
         case ResponseMessageType::ACK_DATA_FROM_MEM:
             return "ACK_DATA_FROM_MEM";
+        case ResponseMessageType::ACK_DATA_FROM_MEM_SHRD:
+            return "ACK_DATA_FROM_MEM_SHRD";
         case ResponseMessageType::ACK_NO_DATA:
             return "ACK_NO_DATA";
         default:

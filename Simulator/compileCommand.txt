@@ -8,8 +8,9 @@ output_trace.txt 4 MESI -assoc 2
 
 output_trace.txt 4 MESI -debug -mem_delay 0
 
-debugTrace.txt 2 MESI -debug -mem_delay 0 -num_blocks 1 -assoc 1 -atomic
-debugTrace.txt 2 MOESI -debug -mem_delay 0 -num_blocks 1 -assoc 1 -atomic
-debugTrace.txt 2 MESIF -debug -mem_delay 0 -num_blocks 1 -assoc 1 -atomic
+debugTraceUnit.txt 2 MSI -debug -mem_delay 0 -num_blocks 1 -assoc 1 -atomic
+debugTraceUnit.txt 2 MESI -debug -mem_delay 0 -num_blocks 1 -assoc 1 -atomic
+debugTraceUnit.txt 2 MOESI -debug -mem_delay 0 -num_blocks 1 -assoc 1 -atomic
+debugTraceUnit.txt 2 MESIF -debug -mem_delay 0 -num_blocks 1 -assoc 1 -atomic
 
 compMark.txt 4 MESI 

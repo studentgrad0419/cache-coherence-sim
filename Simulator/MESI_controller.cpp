@@ -68,9 +68,9 @@ void MESIController::processCacheRequest(const CacheRequest& request) {
                 BusMessage busRequest{
                     request.requestedAddress,
                     controllerId,
-                    BusMessageType::GetM
+                    BusMessageType::Upg
                 };
-                if(debug) std::cout<<"   Sent GetM\n";
+                if(debug) std::cout<<"   Sent Upg\n";
                 bus.addBusRequest(busRequest);
                 waitingForResponse = true;
             }
@@ -159,7 +159,7 @@ ResponseMessageType MESIController::processBusMessage(const BusMessage& message)
     }
     
     //Check if from self (for replacement to be okay/communicated)
-    if(message.originThread == controllerId){
+    else if(message.originThread == controllerId){
         //if(!searchBlock) throw std::runtime_error("Error: No block found for a self-originated message.");
         //Check case = PUT_M
         if(message.type == BusMessageType::PutM){
@@ -188,8 +188,8 @@ ResponseMessageType MESIController::processBusMessage(const BusMessage& message)
                         metrics->total_write_back++;//panick removed ealier
                         returnVal = ResponseMessageType::ACK_CACHE_TO_CACHE;
                     }
-                    // //Is Shared -> can send data directly
-                    // else if(searchBlock->state == SHARED) returnVal = ResponseMessageType::ACK_CACHE_TO_CACHE;
+                    //Not part of spec, for purpose of tracking shared
+                    else if(searchBlock->state == SHARED) returnVal = ResponseMessageType::ACK_DATA_FROM_MEM_SHRD;
                     break;
                 case BusMessageType::GetM:
                     if(
@@ -204,8 +204,15 @@ ResponseMessageType MESIController::processBusMessage(const BusMessage& message)
                         //All states must invalidate for write-invalidate
                         searchBlock->state = INVALID;
                         metrics->total_inval++;
-                        returnVal = ResponseMessageType::ACK;//send ack direct for invalidating
+                        //returnVal = ResponseMessageType::ACK;//send ack direct for invalidating
                     }
+                    break;
+                case BusMessageType::Upg:
+                    //Part of Write-Invalidate (if valid for silent evict)
+                    assert(searchBlock->state != MODIFIED);//debug
+                    searchBlock->state = INVALID;
+                    metrics->total_inval++;
+                    //returnVal = ResponseMessageType::NO_ACK;//ACK is not needed
                     break;
                 default:
                     break;
@@ -218,7 +225,7 @@ ResponseMessageType MESIController::processBusMessage(const BusMessage& message)
         }
     }
     //Signal good for getM
-    if(returnVal == ResponseMessageType::NO_ACK && message.type == BusMessageType::GetM) returnVal = ResponseMessageType::ACK;
+    //if(returnVal == ResponseMessageType::NO_ACK && message.type == BusMessageType::GetM) returnVal = ResponseMessageType::ACK;
     //Does not contain block = don't care
     return returnVal;
 }
@@ -243,8 +250,12 @@ void MESIController::processBusResponse(const BusMessage& message, const Respons
     //All responses is to the original requestor
     assert(message.originThread == controllerId);
 
+    if(message.type == BusMessageType::Upg){
+        assert(searchBlock);
+        searchBlock->state = MODIFIED;
+    }
     //REPLACEMENT HAS OCCURED, ONE BLOCK IS RELEASED ALREADY, CONTINUE WITH REPLACEMENT
-    if(!searchBlock){
+    else if(!searchBlock){
         //Logic means first replaced
         Block * toBeReplaced = cache.findReplacementBlock(message.address);
         bus.removeCompletedTransaction(toBeReplaced->address);
@@ -263,8 +274,12 @@ void MESIController::processBusResponse(const BusMessage& message, const Respons
                 case ResponseMessageType::ACK_CACHE_TO_CACHE:
                     newState = SHARED;
                     break;
-                case ResponseMessageType::ACK_DATA_FROM_MEM:
+                case ResponseMessageType::ACK_DATA_FROM_MEM: 
+                    //Is Exclusive
                     newState = EXCLUSIVE;
+                    break;
+                case ResponseMessageType::ACK_DATA_FROM_MEM_SHRD:
+                    newState = SHARED;
                     break;
                 default:
                     assert(0);//Error
@@ -297,7 +312,11 @@ void MESIController::processBusResponse(const BusMessage& message, const Respons
                         newState = SHARED;
                         break;
                     case ResponseMessageType::ACK_DATA_FROM_MEM:
+                        //Is exclusive
                         newState = EXCLUSIVE;
+                        break;
+                    case ResponseMessageType::ACK_DATA_FROM_MEM_SHRD:
+                        newState = SHARED;
                         break;
                     default:
                         assert(0);//Error

@@ -1,8 +1,8 @@
-Total Messages: 69961
-Total Acknowledgment: 19948
-Total Acknowledgment With Data: 1221
-Total Acknowledgment from cache-cache: 661
-Total Cache-to-Cache Transfers: 661
+Total Messages: 4275
+Total Acknowledgment: 1220
+Total Acknowledgment With Data: 1220
+Total Acknowledgment from cache-cache: 660
+Total Cache-to-Cache Transfers: 660
 Total Invalidations: 1535
 Total Write Backs: 620
 Total Reads from Memory: 916

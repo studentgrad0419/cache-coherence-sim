@@ -1,5 +1,5 @@
-Total Messages: 21090
-Total Acknowledgment: 7980
+Total Messages: 15828
+Total Acknowledgment: 2669
 Total Acknowledgment With Data: 2669
 Total Acknowledgment from cache-cache: 17
 Total Cache-to-Cache Transfers: 17

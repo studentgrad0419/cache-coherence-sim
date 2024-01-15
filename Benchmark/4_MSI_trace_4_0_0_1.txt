@@ -1,11 +1,11 @@
-Total Messages: 10221
-Total Acknowledgment: 3043
+Total Messages: 4175
+Total Acknowledgment: 606
 Total Acknowledgment With Data: 606
 Total Acknowledgment from cache-cache: 12
 Total Cache-to-Cache Transfers: 12
 Total Invalidations: 1412
 Total Write Backs: 603
-Total Reads from Memory: 1557
+Total Reads from Memory: 1406
 Total Cache Misses: 1418
 Total Cache Hits: 3821
 

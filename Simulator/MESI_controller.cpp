@@ -159,7 +159,7 @@ ResponseMessageType MESIController::processBusMessage(const BusMessage& message)
     }
     
     //Check if from self (for replacement to be okay/communicated)
-    else if(message.originThread == controllerId){
+    if(message.originThread == controllerId){
         //if(!searchBlock) throw std::runtime_error("Error: No block found for a self-originated message.");
         //Check case = PUT_M
         if(message.type == BusMessageType::PutM){
@@ -171,6 +171,7 @@ ResponseMessageType MESIController::processBusMessage(const BusMessage& message)
             else{
                 returnVal = ResponseMessageType::ACK;
             }
+            bus.removeCompletedTransaction(searchBlock->address);
             searchBlock->state = INVALID;
             metrics->total_inval++;
         }
@@ -258,7 +259,7 @@ void MESIController::processBusResponse(const BusMessage& message, const Respons
     else if(!searchBlock){
         //Logic means first replaced
         Block * toBeReplaced = cache.findReplacementBlock(message.address);
-        bus.removeCompletedTransaction(toBeReplaced->address);
+        //bus.removeCompletedTransaction(toBeReplaced->address);
         
         //assert toBeReplaced has invalid
         assert(toBeReplaced->state == CacheBlockState::INVALID);

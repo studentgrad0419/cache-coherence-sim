@@ -189,6 +189,7 @@ ResponseMessageType MOESIController::processBusMessage(const BusMessage& message
                 returnVal = ResponseMessageType::ACK;
             }
             // E/M/O/S -> I
+            bus.removeCompletedTransaction(searchBlock->address);
             searchBlock->state = INVALID;
             metrics->total_inval++;
         }
@@ -289,7 +290,7 @@ void MOESIController::processBusResponse(const BusMessage& message, const Respon
     else if(!searchBlock){
         //Logic means first replaced
         Block * toBeReplaced = cache.findReplacementBlock(message.address);
-        bus.removeCompletedTransaction(toBeReplaced->address);
+        //bus.removeCompletedTransaction(toBeReplaced->address);
         
         //assert toBeReplaced has invalid
         assert(toBeReplaced->state == CacheBlockState::INVALID);

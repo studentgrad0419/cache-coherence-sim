@@ -172,6 +172,7 @@ ResponseMessageType MSIController::processBusMessage(const BusMessage& message) 
             else{
                 returnVal = ResponseMessageType::ACK;
             }
+            bus.removeCompletedTransaction(searchBlock->address);
             searchBlock->state = INVALID;
             metrics->total_inval++;
         }
@@ -252,7 +253,7 @@ void MSIController::processBusResponse(const BusMessage& message, const Response
     else if(!searchBlock){
         //Logic means first replaced (also called victim block)
         Block * toBeReplaced = cache.findReplacementBlock(message.address);
-        bus.removeCompletedTransaction(toBeReplaced->address);
+        //bus.removeCompletedTransaction(toBeReplaced->address);
         
         //assert toBeReplaced has invalid
         assert(toBeReplaced->state == CacheBlockState::INVALID);

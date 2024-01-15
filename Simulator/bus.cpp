@@ -4,7 +4,7 @@
 //MEthods of bus,h
 void Bus::addBusRequest(const BusMessage& request) {
     messageQueue.push(request);
-    if (request.address != -1 && (request.type == BusMessageType::GetM || request.type == BusMessageType::GetS || request.type == BusMessageType::Upg))
+    if (request.address != -1 )//&& (request.type == BusMessageType::GetM || request.type == BusMessageType::GetS || request.type == BusMessageType::Upg))
         activeTransactions.insert(request.address);
 }
 
